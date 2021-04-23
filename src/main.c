@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "guimp.h"
+#include <stdio.h>
 /*
 void	main_selector(t_game *game)
 {
@@ -338,7 +339,9 @@ int main (void) {//int argc, char ** args) {
 
         	if ( SDL_TEXTINPUT == windowEvent.text.type)
         	{
-        		SDL_Log("Window %d get text:[%s]\n", windowEvent.window.windowID, windowEvent.text.text);
+                printf("TEXT = [%s]\n", windowEvent.text.text);
+
+        		SDL_Log("Window %d get text:[%04x][%04x]\n", windowEvent.window.windowID, windowEvent.text.text[0], windowEvent.text.text[1]);
         	}
 
         	if ( SDL_MOUSEBUTTONDOWN == windowEvent.button.type )
@@ -357,5 +360,6 @@ int main (void) {//int argc, char ** args) {
     write(1,"5\n",2);
     quit();
     write(1,"6\n",2);
+
     return 0;
 }
