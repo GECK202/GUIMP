@@ -252,6 +252,43 @@ void quit() {
     SDL_Quit();
 }
 
+void cls_win(SDL_Window *window)
+{
+    /* Declaring the surface. */
+    SDL_Surface *s;
+
+    int width;
+    int height;
+
+    Uint32 ID;
+
+    SDL_Surface *win_scr = SDL_GetWindowSurface(window);
+
+    SDL_GetWindowSize(window, &width, &height);
+
+    /* Creating the surface. */
+    s = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+
+    /* Filling the surface with red color. */
+    SDL_FillRect(s, NULL, SDL_MapRGB(s->format, 255, 0, 0));
+
+    SDL_BlitSurface(s, NULL, win_scr, NULL);
+
+    ID = SDL_GetWindowID(window);
+
+    if (ID == 1)
+    {
+        SDL_BlitSurface(smile, NULL, scr, NULL);
+        SDL_UpdateWindowSurface(win);
+    }
+    else if (ID == 2)
+    {
+        SDL_BlitSurface(smile2, NULL, scr2, NULL);
+        SDL_UpdateWindowSurface(win2);
+    }
+
+}
+
 int main (void) {//int argc, char ** args) {
     if (init() == 1) {
         return 1;
@@ -290,6 +327,15 @@ int main (void) {//int argc, char ** args) {
         		if (win1_is_exist == 0 && win2_is_exist == 0)
 	        		break;
         	}
+
+            //if ( SDL_WINDOWEVENT_SIZE_CHANGED == windowEvent.window.event)
+            //{
+            //    if (windowEvent.window.windowID == 1)
+            //        cls_win(win);
+            //    else if (windowEvent.window.windowID == 2)
+            //        cls_win(win2);
+            //}
+
         	if ( SDL_TEXTINPUT == windowEvent.text.type)
         	{
         		SDL_Log("Window %d get text:[%s]\n", windowEvent.window.windowID, windowEvent.text.text);
