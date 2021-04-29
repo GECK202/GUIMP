@@ -19,6 +19,14 @@
 
 # define BUFF_SIZE 10000
 
+typedef struct		s_node
+{
+	struct s_node	*pnt;
+	struct s_node	*chd;
+	struct s_node	*nxt;
+	void			*data;
+}					t_node;
+
 size_t	ft_strlen(char *str);
 char	*ft_strdup(char *str);
 char	*ft_strdup2(const char *s1);

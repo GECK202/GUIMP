@@ -29,12 +29,14 @@ O_FILES =	$(addprefix $(O_DIR)/, $(addsuffix .o, $(FILES)))
 H_FILE =	$(H_DIR)/guimp.h
 
 LIBS = 		-Llibft -lft \
+			-Llibui -lui \
 			-lm \
 			-lpthread
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	H_FIND =-I libft \
+			-I libui \
 			-I $(H_DIR) \
 			-I $(shell sdl2-config --prefix)/include/SDL2
 
@@ -47,6 +49,7 @@ ifeq ($(UNAME_S),Linux)
 endif
 ifeq ($(UNAME_S),Darwin)
 	H_FIND =-I libft \
+			-I libui \
 			-I include \
 			-I Frameworks/SDL2.framework/Headers\
 			-I Frameworks/SDL2_image.framework/Headers\
@@ -67,6 +70,7 @@ endif
 all: libr $(PROGRAM_NAME)
 
 libr:
+	@make -C libui/ all
 	@make -C libft/ all
 
 $(PROGRAM_NAME): $(O_FILES)
@@ -81,10 +85,12 @@ $(O_DIR)/%.o: $(S_DIR)/%.c $(H_FILE)
 
 clean:
 	make -C libft/ clean
+	make -C libui/ clean
 	rm -rf $(O_DIR)
 
 fclean : clean
 	make -C libft/ fclean
+	make -C libui/ fclean
 	rm -f $(PROGRAM_NAME)
 
 re: fclean all

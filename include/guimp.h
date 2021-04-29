@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include "libft.h"
+# include "libui.h"
 # include <fcntl.h>
 # include <stdio.h>
 # include <sys/types.h>

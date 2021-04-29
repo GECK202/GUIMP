@@ -1,18 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   libui.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vkaron <vkaron@student.21-school.ru>       +#+  +:+       +#+        */
+/*   By: vkaron <vkaron@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/20 14:24:16 by vkaron            #+#    #+#             */
-/*   Updated: 2020/09/15 11:09:21 by vkaron           ###   ########.fr       */
+/*   Created: 2019/09/23 17:12:02 by vkaron            #+#    #+#             */
+/*   Updated: 2020/02/05 16:39:54 by vabraham         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "guimp.h"
+#ifndef LIBUI_H
 
+# include <unistd.h>
+# include <stdlib.h>
+# include <fcntl.h>
+# include "libft.h"
 
-int main (void) {//int argc, char ** args) {
-    return start_gui();
-}
+# include <SDL.h>
+# include <SDL_image.h>
+# include <SDL_ttf.h>
+# include <SDL_mixer.h>
+
+int start_gui();
+
+#endif
