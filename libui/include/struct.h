@@ -18,6 +18,21 @@
 # include <SDL_ttf.h>
 # include <SDL_mixer.h>
 
+typedef struct		s_node
+{
+	struct s_node	*parent;
+	struct s_node	*child;
+	struct s_node	*next;
+	void			*data;
+}					t_node;
+
+typedef struct		s_gui
+{
+	struct s_node	*ws;
+}					t_gui;
+
+
+
 typedef struct		s_vec2
 {
 	double			x;

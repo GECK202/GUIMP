@@ -42,12 +42,12 @@ $(NAME): $(O_FILES)
 
 %.o: %.c libft.h
 	@gcc	$(FLAGS)  -c $< $(H_DIR)
-	@echo $(ECHO_FLAG) '='
+	@echo $(ECHO_FLAG) '0'
 
 clean:
-	rm -f $(O_FILES)
+	@rm -f $(O_FILES)
 
 fclean : clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
 
 re: fclean all

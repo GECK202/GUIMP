@@ -10,13 +10,13 @@
 #                                                                              #
 # **************************************************************************** #
 
-.PHONY: all, clean, fclean, re, libr, libu
+.PHONY: all, clean, fclean, re, libr
 
-PROGRAM_NAME = guimp
+LIB_NAME = libui.a
 
 FLAGS =	-Wall -Wextra -Werror -g
 
-FILES =		main
+FILES =		player init music service_stuff act_sdl
 			
 S_DIR =		src
 
@@ -28,79 +28,65 @@ O_FILES =	$(addprefix $(O_DIR)/, $(addsuffix .o, $(FILES)))
 
 H_FILE =	$(H_DIR)/guimp.h
 
-LIBS = 		-Llibft -lft \
-			-Llibui/obj -lui \
+LIBS = 		-L../libft -lft \
 			-lm \
 			-lpthread
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	H_FIND =-I libft \
-			-I linui/include \
 			-I $(H_DIR) \
-#			-I $(shell sdl2-config --prefix)/include/SDL2
-#
-#	FRAME =	-lSDL2 \
-#			-lSDL2_mixer \
-#			-lSDL2_image \
-#			-lSDL2_ttf
-#			
+			-I $(shell sdl2-config --prefix)/include/SDL2
+
+	FRAME =	-lSDL2 \
+			-lSDL2_mixer \
+			-lSDL2_image \
+			-lSDL2_ttf
+			
 	ECHO_FLAG = -ne
 endif
 ifeq ($(UNAME_S),Darwin)
-	H_FIND =-I libft \
-			-I libui/include \
+	H_FIND =-I ../libft \
 			-I include \
-#			-I Frameworks/SDL2.framework/Headers\
-#			-I Frameworks/SDL2_image.framework/Headers\
-#			-I Frameworks/SDL2_ttf.framework/Headers\
-#			-I Frameworks/SDL2_mixer.framework/Headers\
-#			-F Frameworks/
-#
-#	FRAME =	-F ./Frameworks/ \
-#			-framework SDL2 \
-#			-framework SDL2_image \
-#			-framework SDL2_ttf \
-#			-framework SDL2_mixer \
-#			-rpath Frameworks/
-#			
+			-I Frameworks/SDL2.framework/Headers\
+			-I Frameworks/SDL2_image.framework/Headers\
+			-I Frameworks/SDL2_ttf.framework/Headers\
+			-I Frameworks/SDL2_mixer.framework/Headers\
+			-F Frameworks/
+
+	FRAME =	-F ./Frameworks/ \
+			-framework SDL2 \
+			-framework SDL2_image \
+			-framework SDL2_ttf \
+			-framework SDL2_mixer \
+			-rpath Frameworks/
+			
 	ECHO_FLAG = -n
 endif	
 
-all: libu $(PROGRAM_NAME)
+all: libr $(LIB_NAME)
 
 libr:
-	@echo 'LIBFT'
-	@make -C libft/ all
-	@echo ' '
-	@echo 'OK'
-	@echo ' '
+	make -C ../libft/ all
 
-libu:
-	@echo 'LIBUI'
-	make -C libui/ all
-	@echo ' '
-	@echo 'OK'
-	@echo ' '
-
-$(PROGRAM_NAME): $(O_FILES)
-	@gcc $(FLAGS) -o $@ $^ $(LIBS) #$(FRAME)
-	#$(info  )
-	#$(info # MAKE COMPLETE #)
+$(LIB_NAME): $(O_FILES)
+	#@gcc $(FLAGS) -o $@ $^ $(LIBS) $(FRAME)
+	@echo 'START MAKE LIBUI'
+	@ar $(LIB_NAME) $(O_FILES) #$(LIBS) $(FRAME)
+	$(info  )
+	$(info # MAKE COMPLETE #)
 
 $(O_DIR)/%.o: $(S_DIR)/%.c $(H_FILE)
 	@mkdir -p $(O_DIR)
 	@gcc $(FLAGS) -c $< -o $@ $(H_FIND)
-	@echo $(ECHO_FLAG) '='
+	@echo $(ECHO_FLAG) '8'
 
 clean:
-	make -C libft/ clean
-	make -C libui/ clean
-	rm -rf $(O_DIR)
+	@make -C ../libft/ clean
+	@rm -rf $(O_DIR)
 
 fclean : clean
-	make -C libft/ fclean
-	make -C libui/ fclean
-	rm -f $(PROGRAM_NAME)
+	@make -C ../libft/ fclean
+	@rm -f $(PROGRAM_NAME)
 
 re: fclean all
