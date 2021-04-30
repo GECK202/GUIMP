@@ -14,7 +14,7 @@
 
 FLAGS = -Wall -Wextra -Werror
 
-C_FILES = 	lgui.c
+C_FILES = 	lgui.c window.c
  
 O_FILES = $(C_FILES:.c=.o)
 
