@@ -36,7 +36,7 @@ static t_wnd *create_window(t_wnd_opt *opt)
     return (NULL);
 }
 
-t_window *new_window(t_gmng *mng, t_wnd_opt *opt)
+t_window *new_window(t_gui *mng, t_wnd_opt *opt)
 {
 	t_wnd		*wnd;
 	t_node		*node;
@@ -83,23 +83,9 @@ void redraw_window(t_window *window)
     SDL_UpdateWindowSurface(wnd->win);
 }
 
-void	remove_window(t_gmng *mng, t_window *window)
+void	remove_window(t_window *window)
 {
-	if (window)
-	{
-		if (window->prv)
-		{
-			window->prv->nxt = window->nxt;
-			if (window->nxt)
-				window->nxt->prv = window->prv;
-		}	
-		else
-		{
-			mng->wdws.chd = window->nxt;
-		}
-		destroy_window(window->data);
-		free(window);	
-	}
+	remove_node(window, destroy_window);
 }
 
 void delete_window(t_wnd *wnd)
@@ -116,7 +102,7 @@ void delete_window(t_wnd *wnd)
 	}
 }
 
-void destroy_window(t_wnd *wnd)
+void destroy_window(void *wnd)
 {
 	if (wnd)
 	{
@@ -124,5 +110,4 @@ void destroy_window(t_wnd *wnd)
 		free(wnd);
 	}
 }
-
 

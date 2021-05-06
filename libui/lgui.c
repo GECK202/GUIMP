@@ -22,7 +22,7 @@ const int SCREEN_HEIGHT = 480;
 t_window *wnd = NULL;
 t_window *wnd2 = NULL;
 
-t_gmng mng;
+t_gui gui;
 
 void PrintEvent(const SDL_Event * event)
 {
@@ -99,21 +99,22 @@ int init() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         return (GUI_ERROR);
     ft_putstr("1 SDL init OK\n");
+    SDL_Log("pos undefined=%x\n", SDL_WINDOWPOS_UNDEFINED);
 
 	t_wnd_opt opt;
 	
 	opt.title = "window 1";
-	opt.size.x = SDL_WINDOWPOS_UNDEFINED;
-	opt.size.y = SDL_WINDOWPOS_UNDEFINED;
+	opt.size.x = 0;//SDL_WINDOWPOS_UNDEFINED;
+	opt.size.y = 0;//SDL_WINDOWPOS_UNDEFINED;
 	opt.size.w = SCREEN_WIDTH;
 	opt.size.h = SCREEN_HEIGHT;
 	opt.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-	if (!(wnd = new_window(&mng, &opt)))
+	if (!(wnd = new_window(&gui, &opt)))
 		return (GUI_ERROR);
 	ft_putstr(" - win1 create OK\n");
 	opt.title = "window 2";
-	if (!(wnd2 = new_window(&mng, &opt)))
+	if (!(wnd2 = new_window(&gui, &opt)))
 		return (GUI_ERROR);
 	ft_putstr(" - win2 create OK\n");
     return (GUI_OK);
@@ -129,9 +130,11 @@ int load()
 }
 
 void quit() {
-   	remove_window(&mng, wnd);
+	if (wnd)
+	   	remove_window(wnd);
    	wnd = NULL;
-    remove_window(&mng, wnd2);
+    if (wnd2)
+	    remove_window(wnd2);
     wnd2 = NULL;
     SDL_Quit();
     IMG_Quit();
@@ -139,69 +142,88 @@ void quit() {
 
 
 static int resizingEventWatcher(void *data, SDL_Event *event) {
-	static int	count = 0;
-	Uint32		id;
+	t_gui		*mng;
+	t_window	*w;
 	
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_EXPOSED)
     {
-    	count++;
-		SDL_Log("count=%d\n",count);
-		if (wnd)
+		mng = (t_gui*)data;
+		w = mng->wdws.chd;
+		while(w)
 		{
-			id = ((t_wnd*)(wnd->data))->id;
-			if (event->window.windowID == id)
-			{
-				SDL_Log("redraw window 1 id=%d\n",id);
-				redraw_window(wnd);
-			}
+			if (w->data && (event->window.windowID == ((t_wnd*)(w->data))->id))
+			//{
+				//if (wnd)
+				//{
+					//if (w)
+					//	w = w->nxt;
+					//remove_window(wnd);
+					//wnd = NULL;
+					redraw_window(w);
+				//}
+				
+			//}
+			//if (w)
+				w = w->nxt;
 		}
-		if (wnd2)
-		{
-			id = ((t_wnd*)(wnd2->data))->id;
-			if (event->window.windowID == id)
-			{
-				SDL_Log("redraw window 2 id=%d\n",id);
-				redraw_window(wnd2);
-			}
-		}
-		//if (event->window.windowID == wnd->id)
-		//cls_win(w);
-		//else
-		//	cls_win(wnd2->win);
-		//redraw_window((t_window*)data);
+    }
+    return 0;
+}
+
+int show()
+{
+	const SDL_MessageBoxButtonData buttons[] = {
+        { /* .flags, .buttonid, .text */        0, 0, "no" },
+        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "yes" },
+        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "cancel" },
+    };
+    const SDL_MessageBoxColorScheme colorScheme = {
+        { /* .colors (.r, .g, .b) */
+            /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+            { 255,   0,   0 },
+            /* [SDL_MESSAGEBOX_COLOR_TEXT] */
+            {   0, 255,   0 },
+            /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+            { 255, 255,   0 },
+            /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+            {   0,   0, 255 },
+            /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+            { 255,   0, 255 }
+        }
+    };
+    const SDL_MessageBoxData messageboxdata = {
+        SDL_MESSAGEBOX_INFORMATION, /* .flags */
+        ((t_wnd*)wnd->data)->win, /* .window */
+        "example message box", /* .title */
+        "select a button", /* .message */
+        SDL_arraysize(buttons), /* .numbuttons */
+        buttons, /* .buttons */
+        NULL//&colorScheme /* .colorScheme */
+    };
+    int buttonid;
+    if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
+        SDL_Log("error displaying message box");
+        return 1;
+    }
+    if (buttonid == -1) {
+        SDL_Log("no selection");
+    } else {
+        SDL_Log("selection was %s", buttons[buttonid].text);
     }
     return 0;
 }
 
 int start_gui()
 {
-	ft_putstr("0 Start program\n");
-	
-    if (init() == GUI_ERROR) {
+    if (init() == GUI_ERROR || load() == GUI_ERROR)
         return (GUI_ERROR);
-    }
-    ft_putstr("2 Init and create windows OK\n");
-
-	if (load() == GUI_ERROR) {
-        return (GUI_ERROR);
-    }
-    ft_putstr("3 Load images OK\n");
-    SDL_AddEventWatch(resizingEventWatcher, &mng);
-    //SDL_AddEventWatch(resizingEventWatcher, wnd2);
-
-    //SDL_BlitSurface(wnd->smile, NULL, wnd->scr, NULL);
-    //SDL_UpdateWindowSurface(wnd->win);
-    //ft_putstr("4 Blit and update surface 1\n");
-    
-    //SDL_BlitSurface(wnd2->smile, NULL, wnd2->scr, NULL);
-    //SDL_UpdateWindowSurface(wnd2->win);
-    //ft_putstr("5 Blit and update surface 2\n");
-    
-    //redraw_window(wnd);
-    //redraw_window(wnd2);
-
+    SDL_AddEventWatch(resizingEventWatcher, &gui);
+    show();
+    //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING,
+    //                     "Missing file",
+    //                     "File is missing. Please reinstall the program.",
+    //                     ((t_wnd*)wnd2->data)->win);
     SDL_Event windowEvent;
-    
     while ( 1 )
     {
         if ( SDL_PollEvent( &windowEvent ) )
@@ -219,13 +241,13 @@ int start_gui()
         		
         		if (wnd && windowEvent.window.windowID == w1->id)
         		{
-        			remove_window(&mng, wnd);
+        			remove_window(wnd);
         			//w1->is_exist = SDL_FALSE;
         			wnd = NULL;
         		}
         		else if (wnd2 && windowEvent.window.windowID == w2->id)
         		{
-        			remove_window(&mng, wnd2);
+        			remove_window(wnd2);
         			//w2->is_exist = SDL_FALSE;
         			wnd2 = NULL;
         		}

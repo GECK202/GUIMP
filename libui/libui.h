@@ -46,10 +46,10 @@ typedef struct		s_rect
 	int 			h;
 }					t_rect;
 
-typedef struct 		s_gmng
+typedef struct 		s_gui
 {
 	t_node			wdws;
-}					t_gmng;
+}					t_gui;
 
 typedef struct		s_wnd_opt
 {
@@ -69,12 +69,13 @@ typedef struct		s_wnd
 
 int					start_gui();
 void				delete_window(t_wnd *wnd);
-void				destroy_window(t_wnd *wnd);
+void				destroy_window(void *wnd);
 t_node				*create_node(t_node *parent, void *data);
 t_node				*add_node(t_node *pnt, void *data);
-t_window			*new_window(t_gmng *mng, t_wnd_opt *opt);
+void				remove_node(t_node *node, void (*del_fun)(void *));
+t_window			*new_window(t_gui *mng, t_wnd_opt *opt);
 int					set_window_image(t_window *window, char *filename);
 void				redraw_window(t_window *window);
-void				remove_window(t_gmng *mng, t_window *window);
+void				remove_window(t_window *window);
 
 #endif

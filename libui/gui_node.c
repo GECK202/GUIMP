@@ -50,3 +50,23 @@ t_node	*add_node(t_node *pnt, void *data)
 	return (node);
 }
 
+void	remove_node(t_node *node, void (*del_fun)(void *))
+{
+	if (node)
+	{
+		if (node->prv)
+		{
+			node->prv->nxt = node->nxt;
+			if (node->nxt)
+				node->nxt->prv = node->prv;
+		}	
+		else
+		{
+			node->chd = node->nxt;
+		}
+		if (node->data)
+			del_fun(node->data);
+		free(node);	
+	}
+}
+
