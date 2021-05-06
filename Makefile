@@ -14,7 +14,8 @@
 
 PROGRAM_NAME = guimp
 
-FLAGS =	-Wall -Wextra -Werror -g
+FLAGS =	
+#-Wall -Wextra -Werror -g
 
 FILES =		main player init music service_stuff act_sdl
 			
@@ -28,15 +29,15 @@ O_FILES =	$(addprefix $(O_DIR)/, $(addsuffix .o, $(FILES)))
 
 H_FILE =	$(H_DIR)/guimp.h
 
-LIBS = 		-Llibft -lft \
-			-Llibui -lui \
+LIBS = 		-Llibui -lui \
+			-Llibft -lft \
 			-lm \
 			-lpthread
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	H_FIND =-I libft \
-			-I libui \
+	H_FIND =-I libui \
+			-I libft \
 			-I $(H_DIR) \
 			-I $(shell sdl2-config --prefix)/include/SDL2
 
@@ -48,8 +49,8 @@ ifeq ($(UNAME_S),Linux)
 	ECHO_FLAG = -ne
 endif
 ifeq ($(UNAME_S),Darwin)
-	H_FIND =-I libft \
-			-I libui \
+	H_FIND =-I libui \
+			-I libft \
 			-I include \
 			-I Frameworks/SDL2.framework/Headers\
 			-I Frameworks/SDL2_image.framework/Headers\
@@ -70,8 +71,8 @@ endif
 all: libr $(PROGRAM_NAME)
 
 libr:
-	@make -C libui/ all
 	@make -C libft/ all
+	@make -C libui/ all
 
 $(PROGRAM_NAME): $(O_FILES)
 	@gcc $(FLAGS) -o $@ $^ $(LIBS) $(FRAME)

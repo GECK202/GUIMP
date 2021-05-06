@@ -12,29 +12,54 @@
 
 .PHONY: all, clean, fclean, re
 
-FLAGS = -Wall -Wextra -Werror
+FLAGS = 
+#-Wall -Wextra -Werror
 
-C_FILES = 	lgui.c window.c
+C_FILES = 	lgui.c gui_window.c gui_node.c
  
 O_FILES = $(C_FILES:.c=.o)
 
-H_DIR = -I ./ \
-		-I ../libft \
-		-I ../Frameworks/SDL2.framework/Headers\
-		-I ../Frameworks/SDL2_image.framework/Headers\
-		-I ../Frameworks/SDL2_ttf.framework/Headers\
-		-I ../Frameworks/SDL2_mixer.framework/Headers\
-		-F ../Frameworks/
 
-NAME = libui.a
+
+#H_DIR = -I ./ \
+#		-I ../libft \
+#		-I ../Frameworks/SDL2.framework/Headers\
+#		-I ../Frameworks/SDL2_image.framework/Headers\
+#		-I ../Frameworks/SDL2_ttf.framework/Headers\
+#		-I ../Frameworks/SDL2_mixer.framework/Headers\
+#		-F ../Frameworks/
+		
+		
+
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
+	H_FIND  =	-I./ \
+				-I ../libft \
+				-I $(shell sdl2-config --prefix)/include/SDL2
+
 	ECHO_FLAG = -ne
 endif
 ifeq ($(UNAME_S),Darwin)
+	H_FIND =	-I ./ \
+				-I ../libft \
+				-I ../Frameworks/SDL2.framework/Headers\
+				-I ../Frameworks/SDL2_image.framework/Headers\
+				-I ../Frameworks/SDL2_ttf.framework/Headers\
+				-I ../Frameworks/SDL2_mixer.framework/Headers\
+				-F ../Frameworks/
+			
 	ECHO_FLAG = -n
-endif
+endif	
+
+
+
+
+
+
+NAME = libui.a
+
+
 
 all: $(NAME)
 
@@ -42,7 +67,7 @@ $(NAME): $(O_FILES)
 	@ar rc $(NAME) $(O_FILES)
 
 %.o: %.c libui.h
-	@gcc	$(FLAGS)  -c $< $(H_DIR)
+	@gcc	$(FLAGS)  -c $< $(H_FIND)
 	@echo $(ECHO_FLAG) '='
 
 clean:

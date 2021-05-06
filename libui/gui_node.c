@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "libui.h"
 
-t_node *create_node(t_node *parent, void *data)
+t_node	*create_node(t_node *parent, void *data)
 {
 	t_node *node;
 
@@ -20,26 +20,33 @@ t_node *create_node(t_node *parent, void *data)
 	if (node) {
 		node->pnt = parent;
 		node->nxt = NULL;
+		node->prv = NULL;
 		node->chd = NULL;
 		node->data = data;
 	}
-	return node;
+	return (node);
 }
 
-int		add_child(t_node *node, void *data)
+t_node	*add_node(t_node *pnt, void *data)
 {
-	t_node *chd;
-	t_node *tmp;
+	t_node *node;
+	t_node *prv;
 
-	chd = create_node(node, data);
-	if (chd)
+	node = create_node(pnt, data);
+	if (node)
 	{
-		tmp = node->next;
-		if (tmp)
+		if (!(pnt->chd))
+			pnt->chd = node;
+		else
 		{
-			while(tmp->next)
-				tmp = tmp->next;
+			prv = pnt->chd;
+			if (prv->nxt)
+				while(prv->nxt)
+					prv = prv->nxt;
+			node->prv = prv;
+			prv->nxt = node;
 		}
-		tmp->next = chd;
 	}
+	return (node);
 }
+

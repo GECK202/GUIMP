@@ -22,35 +22,59 @@
 # include <SDL_ttf.h>
 # include <SDL_mixer.h>
 
-typedef struct	s_rect
-{
-	int 		x;
-	int 		y;
-	int 		w;
-	int 		h;
-}				t_rect;
+# define GUI_ERROR 1
+# define GUI_OK 0
 
-typedef struct 	s_gmng
-{
-	t_node		*root;
-}				t_gmng;
 
-typedef struct	s_wnd_opt
-{
-	const char	*title;
-	t_rect		size;
-	Uint32		flags;
-}				t_wnd_opt;
 
-typedef struct	s_wnd
+typedef struct		s_node
 {
-	SDL_Window	*wnd;
-	SDL_Sufface	*srf;
-	SDL_Render	*ren;
-	SDL_Texture	*txt;
-	SDL_bool	is_enb;
-}				t_wnd;
+	struct s_node	*pnt;
+	struct s_node	*chd;
+	struct s_node	*nxt;
+	struct s_node	*prv;
+	void			*data;
+}					t_node;
 
-int start_gui();
+typedef t_node		t_window;
+
+typedef struct		s_rect
+{
+	int 			x;
+	int 			y;
+	int 			w;
+	int 			h;
+}					t_rect;
+
+typedef struct 		s_gmng
+{
+	t_node			wdws;
+}					t_gmng;
+
+typedef struct		s_wnd_opt
+{
+	const char		*title;
+	t_rect			size;
+	Uint32			flags;
+}					t_wnd_opt;
+
+typedef struct		s_wnd
+{
+	SDL_Window		*win;
+	Uint32			id;
+	SDL_Surface		*img;
+	Uint32			color;
+	SDL_bool		is_exist;
+}					t_wnd;
+
+int					start_gui();
+void				delete_window(t_wnd *wnd);
+void				destroy_window(t_wnd *wnd);
+t_node				*create_node(t_node *parent, void *data);
+t_node				*add_node(t_node *pnt, void *data);
+t_window			*new_window(t_gmng *mng, t_wnd_opt *opt);
+int					set_window_image(t_window *window, char *filename);
+void				redraw_window(t_window *window);
+void				remove_window(t_gmng *mng, t_window *window);
 
 #endif
