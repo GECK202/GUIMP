@@ -13,6 +13,30 @@
 #include "libui.h"
 #include <stdio.h>
 
+static void delete_window(t_wnd *wnd)
+{
+	if (wnd->img)
+	{
+		SDL_FreeSurface(wnd->img);
+		wnd->img = NULL;
+	}
+	if(wnd->win)
+	{
+		SDL_DestroyWindow(wnd->win);
+		wnd->win = NULL;
+	}
+}
+
+
+static void destroy_window(void *wnd)
+{
+	if (wnd)
+	{
+		delete_window(wnd);
+		free(wnd);
+	}
+}
+
 static t_wnd *create_window(t_wnd_opt *opt)
 {
 	t_wnd		*wnd;
@@ -43,7 +67,7 @@ t_window *new_window(t_gui *mng, t_wnd_opt *opt)
 
 	if (wnd = create_window(opt))
 	{
-		if (!(node = add_node(&(mng->wdws), wnd)))
+		if (!(node = add_node(&(mng->wdws), wnd, destroy_window)))
 		{
 			destroy_window(wnd);
 			return (NULL);
@@ -85,29 +109,10 @@ void redraw_window(t_window *window)
 
 void	remove_window(t_window *window)
 {
-	remove_node(window, destroy_window);
+	remove_node(window);
 }
 
-void delete_window(t_wnd *wnd)
-{
-	if (wnd->img)
-	{
-		SDL_FreeSurface(wnd->img);
-		wnd->img = NULL;
-	}
-	if(wnd->win)
-	{
-		SDL_DestroyWindow(wnd->win);
-		wnd->win = NULL;
-	}
-}
 
-void destroy_window(void *wnd)
-{
-	if (wnd)
-	{
-		delete_window(wnd);
-		free(wnd);
-	}
-}
+
+
 

@@ -25,7 +25,10 @@
 # define GUI_ERROR 1
 # define GUI_OK 0
 
+# define SCREEN_WIDTH 640
+# define SCREEN_HEIGHT 480 
 
+typedef void (*del_func)(void*);
 
 typedef struct		s_node
 {
@@ -34,6 +37,7 @@ typedef struct		s_node
 	struct s_node	*nxt;
 	struct s_node	*prv;
 	void			*data;
+	del_func		del;
 }					t_node;
 
 typedef t_node		t_window;
@@ -45,11 +49,6 @@ typedef struct		s_rect
 	int 			w;
 	int 			h;
 }					t_rect;
-
-typedef struct 		s_gui
-{
-	t_node			wdws;
-}					t_gui;
 
 typedef struct		s_wnd_opt
 {
@@ -67,12 +66,22 @@ typedef struct		s_wnd
 	SDL_bool		is_exist;
 }					t_wnd;
 
+
+typedef struct 		s_gui
+{
+	t_node			wdws;
+	t_wnd_opt		opt;
+	t_wnd			fwnd;
+}					t_gui;
+
+
+
 int					start_gui();
-void				delete_window(t_wnd *wnd);
-void				destroy_window(void *wnd);
-t_node				*create_node(t_node *parent, void *data);
-t_node				*add_node(t_node *pnt, void *data);
-void				remove_node(t_node *node, void (*del_fun)(void *));
+//void				delete_window(t_wnd *wnd);
+//void				destroy_window(void *wnd);
+t_node				*create_node(t_node *parent, void *data, del_func del);
+t_node				*add_node(t_node *pnt, void *data, del_func del);
+void				remove_node(t_node *node);
 t_window			*new_window(t_gui *mng, t_wnd_opt *opt);
 int					set_window_image(t_window *window, char *filename);
 void				redraw_window(t_window *window);

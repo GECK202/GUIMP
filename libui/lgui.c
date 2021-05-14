@@ -16,13 +16,10 @@
 //t_wnd *wnd = NULL;
 //t_wnd *wnd2 = NULL;
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
 t_window *wnd = NULL;
 t_window *wnd2 = NULL;
 
-t_gui gui;
+//t_gui gui;
 
 void PrintEvent(const SDL_Event * event)
 {
@@ -95,47 +92,53 @@ void PrintEvent(const SDL_Event * event)
     }
 }
 
-int init() {
+t_gui *init() {
+    t_gui *gui;
+
+    if(!(gui = (t_gui*)ft_memalloc(sizeof(t_gui))))
+    	return (NULL);
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
-        return (GUI_ERROR);
-    ft_putstr("1 SDL init OK\n");
-    SDL_Log("pos undefined=%x\n", SDL_WINDOWPOS_UNDEFINED);
-
-	t_wnd_opt opt;
-	
-	opt.title = "window 1";
-	opt.size.x = 0;//SDL_WINDOWPOS_UNDEFINED;
-	opt.size.y = 0;//SDL_WINDOWPOS_UNDEFINED;
-	opt.size.w = SCREEN_WIDTH;
-	opt.size.h = SCREEN_HEIGHT;
-	opt.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
-
-	if (!(wnd = new_window(&gui, &opt)))
-		return (GUI_ERROR);
-	ft_putstr(" - win1 create OK\n");
-	opt.title = "window 2";
-	if (!(wnd2 = new_window(&gui, &opt)))
-		return (GUI_ERROR);
-	ft_putstr(" - win2 create OK\n");
-    return (GUI_OK);
+    {
+    	free(gui);
+    	SDL_Quit();
+    	IMG_Quit();
+        return (NULL);
+    }
+	gui->opt.title = "window default";
+	gui->opt.size.x = SDL_WINDOWPOS_UNDEFINED;
+	gui->opt.size.y = SDL_WINDOWPOS_UNDEFINED;
+	gui->opt.size.w = SCREEN_WIDTH;
+	gui->opt.size.h = SCREEN_HEIGHT;
+	gui->opt.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+	if (!(wnd = new_window(gui, &(gui->opt))))
+	{
+		free(gui);
+		SDL_Quit();
+    	IMG_Quit();
+		return (NULL);
+	}
+    return (gui);
 }
 
 int load()
 {
 	if (set_window_image(wnd, "res/im1.png") == GUI_ERROR)
 		return (GUI_ERROR);
-	if (set_window_image(wnd2, "res/im2.jpeg") == GUI_ERROR)
-		return (GUI_ERROR);
+	//if (set_window_image(wnd2, "res/im2.jpeg") == GUI_ERROR)
+	//	return (GUI_ERROR);
 	return (GUI_OK);
 }
 
-void quit() {
+void quit(t_gui *gui) {
+		
 	if (wnd)
 	   	remove_window(wnd);
    	wnd = NULL;
     if (wnd2)
 	    remove_window(wnd2);
     wnd2 = NULL;
+    if (gui)
+	    free(gui);
     SDL_Quit();
     IMG_Quit();
 }
@@ -215,10 +218,12 @@ int show()
 
 int start_gui()
 {
-    if (init() == GUI_ERROR || load() == GUI_ERROR)
+	t_gui *gui;
+	
+    if (!(gui = init()) || load() == GUI_ERROR)
         return (GUI_ERROR);
     SDL_AddEventWatch(resizingEventWatcher, &gui);
-    show();
+    //show();
     //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING,
     //                     "Missing file",
     //                     "File is missing. Please reinstall the program.",
@@ -297,7 +302,7 @@ int start_gui()
     	SDL_Delay(10);
     }
     ft_putstr("6 Loop end\n");
-    quit();
+    quit(gui);
     ft_putstr("7 All destroy\n");
 
     return (GUI_OK);

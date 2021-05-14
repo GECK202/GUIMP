@@ -12,7 +12,7 @@
 
 #include "libui.h"
 
-t_node	*create_node(t_node *parent, void *data)
+t_node	*create_node(t_node *parent, void *data, del_func del)
 {
 	t_node *node;
 
@@ -23,16 +23,17 @@ t_node	*create_node(t_node *parent, void *data)
 		node->prv = NULL;
 		node->chd = NULL;
 		node->data = data;
+		node->del = del;
 	}
 	return (node);
 }
 
-t_node	*add_node(t_node *pnt, void *data)
+t_node	*add_node(t_node *pnt, void *data, del_func del)
 {
 	t_node *node;
 	t_node *prv;
 
-	node = create_node(pnt, data);
+	node = create_node(pnt, data, del);
 	if (node)
 	{
 		if (!(pnt->chd))
@@ -50,7 +51,7 @@ t_node	*add_node(t_node *pnt, void *data)
 	return (node);
 }
 
-void	remove_node(t_node *node, void (*del_fun)(void *))
+void	remove_node(t_node *node)
 {
 	if (node)
 	{
@@ -65,7 +66,7 @@ void	remove_node(t_node *node, void (*del_fun)(void *))
 			node->chd = node->nxt;
 		}
 		if (node->data)
-			del_fun(node->data);
+			node->del(node->data);
 		free(node);	
 	}
 }
