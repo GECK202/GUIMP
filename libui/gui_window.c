@@ -42,20 +42,19 @@ static t_wnd *create_window(t_wnd_opt *opt)
 	t_wnd		*wnd;
 	SDL_Surface	*srf;
 
-	if (wnd = (t_wnd*)ft_memalloc(sizeof(t_wnd)))
+	if ((wnd = (t_wnd*)ft_memalloc(sizeof(t_wnd))))
 	{
-		if (!(wnd->win = SDL_CreateWindow(opt->title, opt->size.x, opt->size.y,
+		if ((wnd->win = SDL_CreateWindow(opt->title, opt->size.x, opt->size.y,
 			opt->size.w, opt->size.h, opt->flags)))
 		{
-			free(wnd);
-        	return (NULL);
+			wnd->id = SDL_GetWindowID(wnd->win);
+    		srf = SDL_GetWindowSurface(wnd->win);
+    		wnd->color = SDL_MapRGBA(srf->format, 255, 255, 255, 255);
+    		wnd->is_exist = SDL_TRUE;
+    		wnd->img = NULL;
+    		return (wnd);
     	}
-    	wnd->id = SDL_GetWindowID(wnd->win);
-    	srf = SDL_GetWindowSurface(wnd->win);
-    	wnd->color = SDL_MapRGBA(srf->format, 255, 255, 255, 255);
-    	wnd->is_exist = SDL_TRUE;
-    	wnd->img = NULL;
-    	return (wnd);
+		free(wnd);
     }
     return (NULL);
 }
@@ -65,14 +64,11 @@ t_window *new_window(t_gui *mng, t_wnd_opt *opt)
 	t_wnd		*wnd;
 	t_node		*node;
 
-	if (wnd = create_window(opt))
+	if ((wnd = create_window(opt)))
 	{
-		if (!(node = add_node(&(mng->wdws), wnd, destroy_window)))
-		{
-			destroy_window(wnd);
-			return (NULL);
-		}
-		return (node);
+		if ((node = add_node(&(mng->wdws), wnd, destroy_window)))
+			return (node);
+		destroy_window(wnd);
     }
     return NULL;
 }
