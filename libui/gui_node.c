@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_tree.c                                          :+:      :+:    :+:   */
+/*   gui_node.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vabraham <vabraham@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vkaron <vkaron@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/09 20:52:08 by vkaron            #+#    #+#             */
-/*   Updated: 2020/02/18 21:23:01 by vabraham         ###   ########.fr       */
+/*   Updated: 2020/02/18 21:23:01 by vkaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,21 @@ void	remove_node(t_node *node)
 				node->nxt->prv = node->prv;
 		}	
 		else
-		{
 			node->chd = node->nxt;
-		}
 		if (node->data)
 			node->del(node->data);
 		free(node);	
 	}
 }
 
+void	act_node(t_node *node, void(*f)(void*))
+{
+	if (node)
+	{
+		f(node);
+		if (node->nxt)
+			act_node(node->nxt, f);
+		if (node->chd)
+			act_node(node->chd, f);
+	}
+}

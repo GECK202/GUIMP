@@ -109,7 +109,7 @@ t_gui *init() {
 	gui->opt.size.y = SDL_WINDOWPOS_UNDEFINED;
 	gui->opt.size.w = SCREEN_WIDTH;
 	gui->opt.size.h = SCREEN_HEIGHT;
-	gui->opt.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS;
+	gui->opt.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 	if (!(wnd = new_window(gui, &(gui->opt))))
 	{
 		free(gui);
@@ -177,35 +177,7 @@ static int resizingEventWatcher(void *data, SDL_Event *event) {
 	return 0;
 }
 
-int show()
-{
-	const SDL_MessageBoxButtonData buttons[] = {
-		{ /* .flags, .buttonid, .text */        0, 0, "нет" },
-		{ SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "да" },
-		{ SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "отмена" },
-	};
-	const SDL_MessageBoxColorScheme colorScheme = {{{255, 0, 0}, {0, 255, 0}, {255, 255, 0}, {0, 0, 255}, {255, 0, 255}}};
-	const SDL_MessageBoxData messageboxdata = {
-		SDL_MESSAGEBOX_WARNING, /* .flags */
-		((t_wnd*)wnd->data)->win, /* .window */
-		"модальное окно 1", /* .title */
-		"нажми кнопку", /* .message */
-		SDL_arraysize(buttons), /* .numbuttons */
-		buttons, /* .buttons */
-		&colorScheme /* .colorScheme */
-	};
-	int buttonid;
-	if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
-		SDL_Log("error displaying message box");
-		return 1;
-	}
-	if (buttonid == -1) {
-		SDL_Log("no selection");
-	} else {
-		SDL_Log("selection was %s [%d]", buttons[buttonid].text, buttonid);
-	}
-	return 0;
-}
+
 
 int start_gui()
 {
@@ -215,9 +187,8 @@ int start_gui()
 		return (GUI_ERROR);
 
 	SDL_AddEventWatch(resizingEventWatcher, gui);
-	SDL_Log("return key = %d; esc key = %d", SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT);
-	//
-	show();
+
+	SDL_Log("PRESSED = %d",gui_msg(((t_wnd*)wnd->data), 1, "Модальное окно", "нажми кнопку"));
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
 						"Модальное окно 2",
 						"инфо 2",
