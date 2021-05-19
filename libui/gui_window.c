@@ -79,7 +79,7 @@ int set_window_image(t_window *window, char *filename)
 	
 	if (window)
 		if ((wnd = (t_wnd*)(window->data)))
-			if ((wnd->img = IMG_Load(filename)))
+			if (!(wnd->img) && (wnd->img = IMG_Load(filename)))
 				return (GUI_OK);
 	return (GUI_ERROR);
 }

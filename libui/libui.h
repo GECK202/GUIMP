@@ -59,7 +59,6 @@ typedef struct		s_node
 }					t_node;
 
 typedef t_node		t_window;
-
 typedef t_node		t_widget;
 
 typedef struct		s_rect
@@ -86,11 +85,27 @@ typedef struct		s_wnd
 	SDL_bool		is_exist;
 }					t_wnd;
 
+typedef struct		s_wdt_opt
+{
+	char			*caption;
+	t_rect			size;
+	Uint32			flags;
+}					t_wdt_opt;
+
+typedef struct		s_fnt
+{
+	const char		*file;
+	int				size;
+}					t_fnt;
+
 typedef struct		s_wdt
 {
 	SDL_Surface		*srf;
 	SDL_Surface		*img;
+	t_rect			size;
 	draw_func		draw;
+	char			*cap;
+	t_fnt			*fnt;
 }					t_wdt;
 
 typedef struct 		s_gui
@@ -98,6 +113,7 @@ typedef struct 		s_gui
 	t_node			wdws;
 	t_wnd_opt		opt;
 	t_wnd			fwnd;
+	t_fnt			def_fnt;
 }					t_gui;
 
 
