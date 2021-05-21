@@ -12,19 +12,23 @@
 
 #include "libui.h"
 
-static void delete_widget(t_wtd *wdt)
+static void delete_widget(t_wdt *wdt)
 {
 	if (wdt->img)
 	{
 		SDL_FreeSurface(wdt->img);
 		wdt->img = NULL;
 	}
-	if(wdt->srf)
+	if (wdt->srf)
 	{
 		SDL_FreeSurface(wdt->srf);
 		wdt->img = NULL;
 	}
-	wdt->draw_func = NULL;
+	if (wdt->title)
+	{
+		free(wdt->title);
+	}
+	//wdt->draw_func = NULL;
 }
 
 
@@ -37,7 +41,7 @@ static void destroy_widget(void *wdt)
 	}
 }
 
-static t_wdt *create_window(t_wdt_opt *opt)
+static t_wdt *create_widget(t_wdt_opt *opt)
 {
 	t_wdt		*wdt;
 	SDL_Surface	*srf;
@@ -47,27 +51,78 @@ static t_wdt *create_window(t_wdt_opt *opt)
 		if ((wdt->srf = SDL_CreateRGBSurface(0, opt->size.w, opt->size.h, 32, 0, 0, 0, 0)))
 		{
 			wdt->size = opt->size;
+			wdt->color = opt->color;
+			wdt->title = opt->title;
+			wdt->win_srf = opt->win_srf;
 			wdt->img = NULL;
-			wdt->flags = 0;
-			return (wnd);
+			return (wdt);
 		}
-		free(wnd);
+		free(wdt);
 	}
 	return (NULL);
 }
 
-t_widget    *new_widget(t_widget *prnt, t_wdt_opt *opt)
+static		void set_root_opt(t_wdt_opt	*opt, SDL_Window *win)
+{
+	int			width;
+	int			height;	
+	
+	opt->title = NULL;
+	opt->color = 0xffff0000;
+	opt->size.x = 30;
+	opt->size.y = 30;
+	SDL_GetWindowSize(win, &width, &height);
+	opt->size.w = width - 60;
+	opt->size.h = height - 60;
+	opt->g_size = opt->size;
+	opt->win_srf = SDL_GetWindowSurface(win);
+}
+
+t_widget	*new_root(t_window *window)
+{
+	t_wnd		*wnd;
+	t_wdt		*root;
+	t_node		*node;
+	t_wdt_opt	opt;
+
+
+	if (window && window->data)
+	{
+		
+		wnd = (t_wnd*)(window->data);
+		set_root_opt(&opt, wnd->win);
+		if ((root = create_widget(&opt)))
+		{
+			ft_putstr("START ROOT OK!\n");
+			if ((node = add_node(window, root, destroy_widget)))
+			{
+				return (node);
+			}
+			destroy_widget(root);
+		}
+	}
+	return (NULL);
+}
+
+t_widget	*new_widget(t_widget *prnt, t_wdt_opt *opt)
 {
 	t_wdt		*wdt;
+	t_wdt		*prn;
 	t_node		*node;
-
-	if ((wdt = create_widget(opt)))
+	
+	if (prnt)
 	{
-		if ((node = add_node(prnt, wnd, destroy_widget)))
-			return (node);
-		destroy_window(wnd);
+		prn = (t_wdt*)(prnt->data);
+		opt->g_size = prn->g_size;
+		opt->win_srf = prn->win_srf;
+		if ((wdt = create_widget(opt)))
+		{	
+			if ((node = add_node(prnt, wdt, destroy_widget)))
+				return (node);
+			destroy_widget(wdt);
+		}
 	}
-	return NULL;
+	return (NULL);
 }
 
 int set_widget_image(t_widget *widget, char *filename)
@@ -81,26 +136,67 @@ int set_widget_image(t_widget *widget, char *filename)
 	return (GUI_ERROR);
 }
 
-void redraw_widget(t_window *window, t_widget *widget, t_rect area)
+void redraw_widget(t_node *widget, void *data)
 {
 	SDL_Surface	*fon;
-	SDL_Surface	*srf;
 	t_rect		trans;
 	t_wdt		*wdt;
+	int			*n;
 	
-	wdt = (t_wdt*)(widget->data);
-	
-	srf = SDL_GetWindowSurface(wnd->win);
-	fon = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-	SDL_FillRect(fon, NULL, wnd->color);
-	SDL_BlitSurface(fon, NULL, srf, NULL);
-	SDL_BlitSurface(wnd->img, NULL, srf, NULL);
+	n = (int*)data;
+	wdt = (t_wdt*)((t_widget*)(widget)->data);
+	SDL_Log("UPDATE-WDT SIZE w=%d, h=%d", wdt->size.w, wdt->size.h);
+	if (wdt->srf->w < wdt->size.w || wdt->srf->h < wdt->size.h)
+	{
+		SDL_FreeSurface(wdt->srf);
+		if (!(wdt->srf = SDL_CreateRGBSurface(0, wdt->size.w, wdt->size.h, 32, 0, 0, 0, 0)))
+		{
+			SDL_Log("ERROR UPDATE WIDGET SURFASE!!!!");
+			exit(-1);
+		}
+	}
+	fon = SDL_CreateRGBSurface(0, wdt->size.w, wdt->size.h, 32, 0, 0, 0, 0);
+	SDL_FillRect(fon, NULL, wdt->color);
+	SDL_BlitSurface(fon, NULL, wdt->srf, NULL);
+	SDL_BlitSurface(wdt->img, NULL, wdt->srf, NULL);
 	SDL_FreeSurface(fon);
-	SDL_UpdateWindowSurface(wnd->win);
+
+	SDL_Rect r;
+
+	r.x = wdt->g_size.x;
+	r.y = wdt->g_size.y;
+	r.w = wdt->g_size.w;
+	r.h = wdt->g_size.h;
+	SDL_BlitSurface(wdt->srf, &r, wdt->win_srf, &r);
 }
 
-void	remove_window(t_window *window)
+void	update_root(t_window *window)
 {
-	remove_node(window);
+	t_wnd	*wnd;
+	t_wdt	*root;
+	SDL_Surface	*s;
+	int		width;
+	int		height;	
+
+	wnd = (t_wnd*)(window->data);
+	root = (t_wdt*)(wnd->root->data);
+	//SDL_GetWindowSize(wnd->win, &width, &height);
+	s = SDL_GetWindowSurface(wnd->win);
+	SDL_Log("UPDATE-w=%d, h=%d", s->w, s->h);
+	root->size.w = s->w - 60;
+	root->size.h = s->h - 60;
+	root->g_size = root->size;
+	root->win_srf = SDL_GetWindowSurface(wnd->win);
+	act_node(wnd->root, NULL, redraw_widget);
+}
+
+void	update_widget(t_widget *widget)
+{
+	act_node(widget, NULL, redraw_widget);
+}
+
+void	remove_widget(t_widget *widget)
+{
+	remove_node(widget);
 }
 

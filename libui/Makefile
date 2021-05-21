@@ -15,7 +15,7 @@
 FLAGS = 
 #-Wall -Wextra -Werror
 
-C_FILES = 	lgui.c gui_window.c gui_node.c gui_msg.c gui_msg_y.c
+C_FILES = 	lgui.c gui_window.c gui_widget.c gui_node.c gui_msg.c gui_msg_y.c
  
 O_FILES = $(C_FILES:.c=.o)
 

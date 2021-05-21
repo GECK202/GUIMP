@@ -20,6 +20,11 @@ static void delete_window(t_wnd *wnd)
 		SDL_FreeSurface(wnd->img);
 		wnd->img = NULL;
 	}
+	if (wnd->root)
+	{
+		remove_widget(wnd->root);
+		wnd->root = NULL;
+	}
 	if(wnd->win)
 	{
 		SDL_DestroyWindow(wnd->win);
@@ -48,15 +53,34 @@ static t_wnd *create_window(t_wnd_opt *opt)
 			opt->size.w, opt->size.h, opt->flags)))
 		{
 			wnd->id = SDL_GetWindowID(wnd->win);
-    		srf = SDL_GetWindowSurface(wnd->win);
-    		wnd->color = SDL_MapRGBA(srf->format, 255, 255, 255, 255);
-    		wnd->is_exist = SDL_TRUE;
-    		wnd->img = NULL;
-    		return (wnd);
-    	}
+			srf = SDL_GetWindowSurface(wnd->win);
+			wnd->color = SDL_MapRGBA(srf->format, 255, 255, 255, 255);
+			wnd->is_exist = SDL_TRUE;
+			wnd->img = NULL;
+			wnd->root = NULL;
+			return (wnd);
+		}
 		free(wnd);
-    }
-    return (NULL);
+	}
+	return (NULL);
+}
+
+static	int	add_root_wdt(t_window *window)
+{
+	t_wnd	*wnd;
+
+	if (window && window->data)
+	{
+		
+		wnd = (t_wnd*)(window->data);
+		if (!(wnd->root))
+		{
+			if (!(wnd->root = new_root(window)))
+				return (GUI_ERROR);
+		}
+		return (GUI_OK);
+	}
+	return (GUI_ERROR);
 }
 
 t_window *new_window(t_gui *mng, t_wnd_opt *opt)
@@ -64,13 +88,21 @@ t_window *new_window(t_gui *mng, t_wnd_opt *opt)
 	t_wnd		*wnd;
 	t_node		*node;
 
+
 	if ((wnd = create_window(opt)))
 	{
 		if ((node = add_node(&(mng->wdws), wnd, destroy_window)))
+		{
+			if (GUI_ERROR == add_root_wdt(node))
+			{
+				remove_node(node);
+				node = NULL;
+			}
 			return (node);
+		}
 		destroy_window(wnd);
-    }
-    return NULL;
+	}
+	return NULL;
 }
 
 int set_window_image(t_window *window, char *filename)
@@ -88,19 +120,28 @@ void redraw_window(t_window *window)
 {
 	SDL_Surface	*fon;
 	SDL_Surface	*srf;
-	int 		width;
-    int			height;
+	int			width;
+	int			height;
 	t_wnd		*wnd;
 	
 	wnd = (t_wnd*)(window->data);
-    SDL_GetWindowSize(wnd->win, &width, &height);
-    srf = SDL_GetWindowSurface(wnd->win);
-    fon = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-    SDL_FillRect(fon, NULL, wnd->color);
-    SDL_BlitSurface(fon, NULL, srf, NULL);
-    SDL_BlitSurface(wnd->img, NULL, srf, NULL);
-    SDL_FreeSurface(fon);
-    SDL_UpdateWindowSurface(wnd->win);
+	SDL_GetWindowSize(wnd->win, &width, &height);
+	srf = SDL_GetWindowSurface(wnd->win);
+	fon = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+	SDL_FillRect(fon, NULL, wnd->color);
+	SDL_BlitSurface(fon, NULL, srf, NULL);
+	SDL_BlitSurface(wnd->img, NULL, srf, NULL);
+	SDL_FreeSurface(fon);
+	update_root(window);
+	update_window(window);
+}
+
+void update_window(t_window *window)
+{
+	t_wnd		*wnd;
+	
+	wnd = (t_wnd*)(window->data);
+	SDL_UpdateWindowSurface(wnd->win);
 }
 
 void	remove_window(t_window *window)

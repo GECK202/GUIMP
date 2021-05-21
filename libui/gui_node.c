@@ -69,14 +69,14 @@ void	remove_node(t_node *node)
 	}
 }
 
-void	act_node(t_node *node, void(*f)(void*))
+void	act_node(t_node *node, void *data, act_node_fun anf)
 {
 	if (node)
 	{
-		f(node);
+		anf(node, data);
 		if (node->nxt)
-			act_node(node->nxt, f);
+			act_node(node->nxt, data, anf);
 		if (node->chd)
-			act_node(node->chd, f);
+			act_node(node->chd, data, anf);
 	}
 }

@@ -147,16 +147,23 @@ void quit(t_gui *gui) {
 static int resizingEventWatcher(void *data, SDL_Event *event) {
 	t_gui		*mng;
 	t_window	*w;
+	//t_rect		r;
 	
-	
+	//r.x = 0;
+	//r.y = 0;
 	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_EXPOSED)
 	{
 		mng = (t_gui*)data;
 		w = mng->wdws.chd;
+		
 		while(w)
 		{
 			if (w->data && (event->window.windowID == ((t_wnd*)(w->data))->id))
+			{
+				//r.w = event->window.data1;
+				//r.h = event->window.data2;
 				redraw_window(w);
+			}
 			//{
 				
 				//if (wnd)
@@ -228,10 +235,11 @@ int start_gui()
 /*
 			if ( SDL_WINDOWEVENT_SIZE_CHANGED == windowEvent.window.event)
 			{
-				if (windowEvent.window.windowID == 1)
-					cls_win(win);
-				else if (windowEvent.window.windowID == 2)
-					cls_win(win2);
+				//if (windowEvent.window.windowID == 1)
+				//	cls_win(win);
+				//else if (windowEvent.window.windowID == 2)
+				//	cls_win(win2);
+				redraw_window(wnd);
 			}
 
 			if ( SDL_WINDOWEVENT_RESIZED == windowEvent.window.event)

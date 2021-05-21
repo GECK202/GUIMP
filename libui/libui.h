@@ -46,7 +46,7 @@
 
 typedef void (*del_func)(void*);
 
-typedef void (*draw_func)(void*);
+//typedef void (*draw_func)(void*);
 
 typedef struct		s_node
 {
@@ -58,6 +58,7 @@ typedef struct		s_node
 	del_func		del;
 }					t_node;
 
+typedef void (*act_node_fun)(t_node*, void*);
 typedef t_node		t_window;
 typedef t_node		t_widget;
 
@@ -83,29 +84,36 @@ typedef struct		s_wnd
 	SDL_Surface		*img;
 	Uint32			color;
 	SDL_bool		is_exist;
+	t_widget		*root;
 }					t_wnd;
 
 typedef struct		s_wdt_opt
 {
-	char			*caption;
+	char			*title;
+	SDL_Surface		*win_srf;
+	unsigned int	color;
 	t_rect			size;
-	Uint32			flags;
+	t_rect			g_size;
 }					t_wdt_opt;
 
 typedef struct		s_fnt
 {
 	const char		*file;
 	int				size;
+//	TTF_Font		*font;
 }					t_fnt;
 
 typedef struct		s_wdt
 {
 	SDL_Surface		*srf;
 	SDL_Surface		*img;
+	SDL_Surface		*win_srf;
 	t_rect			size;
-	draw_func		draw;
-	char			*cap;
-	t_fnt			*fnt;
+	t_rect			g_size;
+	//draw_func		draw;
+	char			*title;
+	//t_fnt			*font;
+	unsigned int	color;
 }					t_wdt;
 
 typedef struct 		s_gui
@@ -121,14 +129,25 @@ typedef struct 		s_gui
 int					start_gui();
 //void				delete_window(t_wnd *wnd);
 //void				destroy_window(void *wnd);
+
 t_node				*create_node(t_node *parent, void *data, del_func del);
 t_node				*add_node(t_node *pnt, void *data, del_func del);
 void				remove_node(t_node *node);
-void				act_node(t_node *node, void(*f)(void*));
+void				act_node(t_node *node, void *data, act_node_fun anf);
+
 t_window			*new_window(t_gui *mng, t_wnd_opt *opt);
 int					set_window_image(t_window *window, char *filename);
 void				redraw_window(t_window *window);
+void				update_window(t_window *window);
 void				remove_window(t_window *window);
+
+t_widget			*new_widget(t_widget *prnt, t_wdt_opt *opt);
+t_widget			*new_root(t_window *window);
+void				redraw_widget(t_node *widget, void *data);
+void				remove_widget(t_widget *widget);
+void				update_widget(t_widget *widget);
+void				update_root(t_window *window);
+
 int					gui_msg(t_wnd *wnd, int btn_scheme, const char *title,
 					const char *msg);
 int					msg_yesno(t_wnd *wnd, const char *title, const char *msg);
