@@ -145,7 +145,6 @@ void redraw_widget(t_node *widget, void *data)
 	
 	n = (int*)data;
 	wdt = (t_wdt*)((t_widget*)(widget)->data);
-	SDL_Log("UPDATE-WDT SIZE w=%d, h=%d", wdt->size.w, wdt->size.h);
 	if (wdt->srf->w < wdt->size.w || wdt->srf->h < wdt->size.h)
 	{
 		SDL_FreeSurface(wdt->srf);
@@ -160,14 +159,7 @@ void redraw_widget(t_node *widget, void *data)
 	SDL_BlitSurface(fon, NULL, wdt->srf, NULL);
 	SDL_BlitSurface(wdt->img, NULL, wdt->srf, NULL);
 	SDL_FreeSurface(fon);
-
-	SDL_Rect r;
-
-	r.x = wdt->g_size.x;
-	r.y = wdt->g_size.y;
-	r.w = wdt->g_size.w;
-	r.h = wdt->g_size.h;
-	SDL_BlitSurface(wdt->srf, &r, wdt->win_srf, &r);
+	SDL_BlitSurface(wdt->srf, (SDL_Rect*)&(wdt->g_size), wdt->win_srf, (SDL_Rect*)&(wdt->g_size));
 }
 
 void	update_root(t_window *window)
@@ -180,9 +172,7 @@ void	update_root(t_window *window)
 
 	wnd = (t_wnd*)(window->data);
 	root = (t_wdt*)(wnd->root->data);
-	//SDL_GetWindowSize(wnd->win, &width, &height);
 	s = SDL_GetWindowSurface(wnd->win);
-	SDL_Log("UPDATE-w=%d, h=%d", s->w, s->h);
 	root->size.w = s->w - 60;
 	root->size.h = s->h - 60;
 	root->g_size = root->size;
