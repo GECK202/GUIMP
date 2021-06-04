@@ -18,7 +18,7 @@
 
 t_window *wnd = NULL;
 t_window *wnd2 = NULL;
-
+t_widget *wdt = NULL;
 //t_gui gui;
 
 void PrintEvent(const SDL_Event * event)
@@ -92,6 +92,23 @@ void PrintEvent(const SDL_Event * event)
 	}
 }
 
+void	make_widget()
+{
+	t_wdt_opt	opt;
+	t_wnd		*win;
+
+	win = (t_wnd*)(wnd->data);
+	opt.title = NULL;
+	//opt.win_srf = SDL_GetWindowSurface(win->win);
+	opt.color = 0xffff00ff;
+	opt.size.x = 100;
+	opt.size.y = 100;
+	opt.size.w = 100;
+	opt.size.h = 40;
+	//opt.g_size = opt.size;
+	wdt = new_widget(wnd, &opt, NULL);
+}
+
 t_gui *init() {
 	t_gui *gui;
 
@@ -117,13 +134,14 @@ t_gui *init() {
 		IMG_Quit();
 		return (NULL);
 	}
+	make_widget();
 	return (gui);
 }
 
 int load()
 {
-	if (set_window_image(wnd, "res/im1.png") == GUI_ERROR)
-		return (GUI_ERROR);
+//	if (set_window_image(wnd, "res/im1.png") == GUI_ERROR)
+	//	return (GUI_ERROR);
 	//if (set_window_image(wnd2, "res/im2.jpeg") == GUI_ERROR)
 	//	return (GUI_ERROR);
 	return (GUI_OK);

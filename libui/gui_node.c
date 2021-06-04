@@ -12,35 +12,40 @@
 
 #include "libui.h"
 
-t_node	*create_node(t_node *parent, void *data, del_func del)
+static t_node	*create_node(t_node_opt	*opt)
 {
 	t_node *node;
 
 	node = (t_node*)ft_memalloc(sizeof(t_node));
 	if (node) {
-		node->pnt = parent;
+		node->pnt = opt->pnt;
 		node->nxt = NULL;
 		node->prv = NULL;
 		node->chd = NULL;
-		node->data = data;
-		node->del = del;
+		node->data = opt->data;
+		node->del = opt->del;
+		node->upd = opt->upd;
+		node->drw = opt->drw;
+		node->srf = opt->srf;
+		node->type = opt->type;
+		node->size = opt->size;
 	}
 	return (node);
 }
 
-t_node	*add_node(t_node *pnt, void *data, del_func del)
+t_node	*add_node(t_node_opt *opt)
 {
 	t_node *node;
 	t_node *prv;
 
-	node = create_node(pnt, data, del);
+	node = create_node(opt);
 	if (node)
 	{
-		if (!(pnt->chd))
-			pnt->chd = node;
+		if (!(opt->pnt->chd))
+			opt->pnt->chd = node;
 		else
 		{
-			prv = pnt->chd;
+			prv = opt->pnt->chd;
 			if (prv->nxt)
 				while(prv->nxt)
 					prv = prv->nxt;

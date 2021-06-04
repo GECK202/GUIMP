@@ -44,7 +44,13 @@
 # define IDNO 7
 
 
-typedef void (*del_func)(void*);
+typedef enum		e_n_type
+{
+	GUI_WND,
+	GUI_WDT
+}					t_n_type;
+
+typedef void (*act_f)(void*);
 
 //typedef void (*draw_func)(void*);
 
@@ -55,8 +61,25 @@ typedef struct		s_node
 	struct s_node	*nxt;
 	struct s_node	*prv;
 	void			*data;
-	del_func		del;
+	act_f			del;
+	act_f			upd;
+	act_f			drw;
+	t_n_type		type;
+	SDL_Surface		*srf;
+	SDL_Rect		size;
 }					t_node;
+
+typedef struct		s_node_opt
+{
+	t_node			*pnt;
+	void			*data;
+	act_f			del;
+	act_f			upd;
+	act_f			drw;
+	t_n_type		type;
+	SDL_Surface		*srf;
+	SDL_Rect		size;
+}					t_node_opt;
 
 typedef void (*act_node_fun)(t_node*, void*);
 typedef t_node		t_window;
@@ -81,19 +104,18 @@ typedef struct		s_wnd
 {
 	SDL_Window		*win;
 	Uint32			id;
-	SDL_Surface		*img;
-	Uint32			color;
+//	SDL_Surface		*img;
+//	Uint32			color;
 	SDL_bool		is_exist;
-	t_widget		*root;
 }					t_wnd;
 
 typedef struct		s_wdt_opt
 {
 	char			*title;
-	SDL_Surface		*win_srf;
+//	SDL_Surface		*win_srf;
 	unsigned int	color;
 	t_rect			size;
-	t_rect			g_size;
+//	t_rect			g_size;
 }					t_wdt_opt;
 
 typedef struct		s_fnt
@@ -106,10 +128,10 @@ typedef struct		s_fnt
 typedef struct		s_wdt
 {
 	SDL_Surface		*srf;
-	SDL_Surface		*img;
-	SDL_Surface		*win_srf;
+//	SDL_Surface		*img;
+//	SDL_Surface		*win_srf;
 	t_rect			size;
-	t_rect			g_size;
+//	t_rect			g_size;
 	//draw_func		draw;
 	char			*title;
 	//t_fnt			*font;
@@ -130,23 +152,30 @@ int					start_gui();
 //void				delete_window(t_wnd *wnd);
 //void				destroy_window(void *wnd);
 
-t_node				*create_node(t_node *parent, void *data, del_func del);
-t_node				*add_node(t_node *pnt, void *data, del_func del);
+//t_node				*create_node(t_node *parent, void *data, del_func del);
+t_node				*add_node(t_node_opt *opt);
+//t_node				*add_node(t_node_opt *opt, t_node *pnt);
 void				remove_node(t_node *node);
 void				act_node(t_node *node, void *data, act_node_fun anf);
 
 t_window			*new_window(t_gui *mng, t_wnd_opt *opt);
-int					set_window_image(t_window *window, char *filename);
+//int					set_window_image(t_window *window, char *filename);
 void				redraw_window(t_window *window);
 void				update_window(t_window *window);
 void				remove_window(t_window *window);
 
-t_widget			*new_widget(t_widget *prnt, t_wdt_opt *opt);
+t_widget			*new_widget(t_window *window, t_wdt_opt *opt, t_widget *prnt);
 t_widget			*new_root(t_window *window);
+
+t_wdt				*create_widget(t_wdt_opt *opt);
+void				destroy_widget(void *wdt);
+
 void				redraw_widget(t_node *widget, void *data);
 void				remove_widget(t_widget *widget);
 void				update_widget(t_widget *widget);
 void				update_root(t_window *window);
+
+int					set_wdt_node_opt(t_node_opt *opt, t_node *prnt, t_wnd *wnd, t_wdt *wdt);
 
 int					gui_msg(t_wnd *wnd, int btn_scheme, const char *title,
 					const char *msg);
