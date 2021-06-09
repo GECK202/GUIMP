@@ -15,11 +15,6 @@
 
 static void delete_window(t_wnd *wnd)
 {
-	//if (wnd->img)
-	//{
-	//	SDL_FreeSurface(wnd->img);
-	//	wnd->img = NULL;
-	//}
 	if (wnd->win)
 	{
 		SDL_DestroyWindow(wnd->win);
@@ -55,26 +50,6 @@ static t_wnd *create_window(t_wnd_opt *opt)
 	return (NULL);
 }
 
-/*
-static	int	add_root_wdt(t_window *window)
-{
-	t_wnd	*wnd;
-
-	if (window && window->data)
-	{
-		
-		wnd = (t_wnd*)(window->data);
-		if (!(wnd->root))
-		{
-			if (!(wnd->root = new_root(window)))
-				return (GUI_ERROR);
-		}
-		return (GUI_OK);
-	}
-	return (GUI_ERROR);
-}
-//*/
-
 int		set_node_opt(t_node_opt *opt, t_node *prnt, t_wnd *wnd)
 {
 	
@@ -89,6 +64,7 @@ int		set_node_opt(t_node_opt *opt, t_node *prnt, t_wnd *wnd)
 	opt->size.y = 0;
 	opt->size.h = 0;
 	opt->size.w = 0;
+	
 	if (wnd && wnd->win)
 	{
 		opt->srf = SDL_GetWindowSurface(wnd->win);
@@ -100,18 +76,16 @@ int		set_node_opt(t_node_opt *opt, t_node *prnt, t_wnd *wnd)
 }
 
 static void		set_root_opt(t_wdt_opt *opt, SDL_Window *win)
-{
-	int			width;
-	int			height;	
-	
+{	
+	SDL_Surface *screen;
+
 	opt->title = NULL;
-	opt->color = 0xffff0000;
+	opt->color = 0xfff0f0f0;
 	opt->size.x = 0;
 	opt->size.y = 0;
-//	opt->win_srf = SDL_GetWindowSurface(win);
-//	opt->size.w = opt->win_srf->w - 60;
-//	opt->size.h = opt->win_srf->h - 60;
-//	opt->g_size = opt->size;
+	screen = SDL_GetWindowSurface(win);
+	opt->size.w = screen->w;
+	opt->size.h = screen->h;
 }
 
 static t_widget	*add_root(t_window *window)
@@ -128,17 +102,22 @@ static t_widget	*add_root(t_window *window)
 		set_root_opt(&opt, wnd->win);
 		if ((root = create_widget(&opt)))
 		{
-			ft_putstr("START ROOT OK!\n");
-			if ((GUI_OK == set_wdt_node_opt(&n_opt, NULL, wnd, root)) && (node = add_node(&n_opt)))
-			//if ((node = add_node(window, root, destroy_widget)))
+			if ((GUI_OK == set_wdt_node_opt(&n_opt, window, wnd, root)) && (node = add_node(&n_opt)))
 			{
-				SDL_Log("root\t\t = %p",node);
 				return (node);
 			}
 			destroy_widget(root);
 		}
 	}
 	return (NULL);
+}
+
+int	set_window_image(t_window *window, char *filename)
+{
+	if (window && window->chd)
+		return (set_widget_image(window->chd, filename));
+	return (GUI_ERROR);
+
 }
 
 t_window *new_window(t_gui *mng, t_wnd_opt *opt)
@@ -151,12 +130,12 @@ t_window *new_window(t_gui *mng, t_wnd_opt *opt)
 	{
 		if ((GUI_OK == set_node_opt(&n_opt, &(mng->wdws), wnd)) && (window = add_node(&n_opt)))
 		{
+			window->srf = SDL_GetWindowSurface(wnd->win);
 			if (!(add_root(window)))
 			{
 				remove_node(window);
 				window = NULL;
 			}
-			SDL_Log("window->chd\t = %p", window->chd);
 			return (window);
 		}
 		destroy_window(wnd);
@@ -164,42 +143,18 @@ t_window *new_window(t_gui *mng, t_wnd_opt *opt)
 	return NULL;
 }
 
-//int set_window_image(t_window *window, char *filename)
-//{
-//	t_wnd		*wnd;
-	
-//	if (window)
-//		if ((wnd = (t_wnd*)(window->data)))
-//			if (!(wnd->img) && (wnd->img = IMG_Load(filename)))
-//				return (GUI_OK);
-//	return (GUI_ERROR);
-//}
-
 void redraw_window(t_window *window)
 {
-	//SDL_Surface	*fon;
-	//SDL_Surface	*srf;
-	//int			width;
-	//int			height;
-	//t_wnd		*wnd;
-	
-	//wnd = (t_wnd*)(window->data);
-	//SDL_GetWindowSize(wnd->win, &width, &height);
-	//srf = SDL_GetWindowSurface(wnd->win);
-	//fon = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-	//SDL_FillRect(fon, NULL, wnd->color);
-	//SDL_BlitSurface(fon, NULL, srf, NULL);
-	//SDL_BlitSurface(wnd->img, NULL, srf, NULL);
-	//SDL_FreeSurface(fon);
 	update_root(window);
 	update_window(window);
 }
 
 void update_window(t_window *window)
 {
-	t_wnd		*wnd;
-	
+	t_wnd *wnd;
+
 	wnd = (t_wnd*)(window->data);
+	printf("update win %p\n", wnd->win);
 	SDL_UpdateWindowSurface(wnd->win);
 }
 

@@ -42,7 +42,9 @@ t_node	*add_node(t_node_opt *opt)
 	if (node)
 	{
 		if (!(opt->pnt->chd))
+		{
 			opt->pnt->chd = node;
+		}
 		else
 		{
 			prv = opt->pnt->chd;

@@ -14,11 +14,11 @@
 
 static void delete_widget(t_wdt *wdt)
 {
-	//if (wdt->img)
-	//{
-	//	SDL_FreeSurface(wdt->img);
-	//	wdt->img = NULL;
-	//}
+	if (wdt->img)
+	{
+		SDL_FreeSurface(wdt->img);
+		wdt->img = NULL;
+	}
 	if (wdt->srf)
 	{
 		SDL_FreeSurface(wdt->srf);
@@ -28,7 +28,6 @@ static void delete_widget(t_wdt *wdt)
 	{
 		free(wdt->title);
 	}
-	//wdt->draw_func = NULL;
 }
 
 
@@ -53,8 +52,7 @@ t_wdt *create_widget(t_wdt_opt *opt)
 			wdt->size = opt->size;
 			wdt->color = opt->color;
 			wdt->title = opt->title;
-//			wdt->win_srf = opt->win_srf;
-//			wdt->img = NULL;
+			wdt->img = NULL;
 			return (wdt);
 		}
 		free(wdt);
@@ -97,18 +95,11 @@ t_widget	*new_widget(t_window *window, t_wdt_opt *opt, t_widget *prnt)
 	{
 		if (!prnt)
 			prnt = window->chd;
-		SDL_Log("new widget parent\t = %p", prnt);
 		prn = (t_wdt*)(prnt->data);
-//		opt->g_size.x = prn->g_size.x + opt->size.x;
-//		opt->g_size.y = prn->g_size.y + opt->size.y;
-//		opt->g_size.w = (int)(fmin(opt->size.w + opt->g_size.x, prn->g_size.w + prn->g_size.x)) - opt->g_size.x;
-//		opt->g_size.h = (int)(fmin(opt->size.h + opt->g_size.y, prn->g_size.h + prn->g_size.y)) - opt->g_size.y;
-//		opt->win_srf = prn->win_srf;
 		if ((wdt = create_widget(opt)))
 		{	
 			if ((GUI_OK == set_wdt_node_opt(&n_opt, prnt, window->data, wdt)) && (widget = add_node(&n_opt)))
 			{
-				SDL_Log("widget\t\t = %p", widget);
 				return (widget);
 			}
 			destroy_widget(wdt);
@@ -123,7 +114,7 @@ int set_widget_image(t_widget *widget, char *filename)
 	
 	if (widget)
 		if ((wdt = (t_wdt*)(widget->data)))
-//			if (!(wdt->img) && (wdt->img = IMG_Load(filename)))
+			if (!(wdt->img) && (wdt->img = IMG_Load(filename)))
 				return (GUI_OK);
 	return (GUI_ERROR);
 }
@@ -141,7 +132,6 @@ void redraw_widget(t_node *widget, void *data)
 	t_wdt		*wdt;
 	int			*n;
 
-	SDL_Log("redraw widget\t = %p", widget);	
 	n = (int*)data;
 	wdt = (t_wdt*)((t_widget*)(widget)->data);
 	if (wdt->srf->w < wdt->size.w || wdt->srf->h < wdt->size.h)
@@ -154,11 +144,15 @@ void redraw_widget(t_node *widget, void *data)
 		}
 	}
 	fon = SDL_CreateRGBSurface(0, wdt->size.w, wdt->size.h, 32, 0, 0, 0, 0);
+	printf("color = %x\n", wdt->color);
+	printf("wdt->surf = %p\n", widget->srf);
 	SDL_FillRect(fon, NULL, wdt->color);
-	SDL_BlitSurface(fon, NULL, wdt->srf, NULL);
-//	SDL_BlitSurface(wdt->img, NULL, wdt->srf, NULL);
-//	SDL_FreeSurface(fon);
-//	SDL_BlitSurface(wdt->srf, NULL, wdt->win_srf, (SDL_Rect*)&(wdt->g_size));
+	SDL_BlitSurface(fon, NULL, widget->srf, NULL);
+	printf("wdt img = %p\n", wdt->img);
+	if (wdt->img)
+	{
+		SDL_BlitSurface(wdt->img, NULL, widget->srf, NULL);
+	}
 }
 
 void	update_root(t_window *window)
@@ -172,10 +166,6 @@ void	update_root(t_window *window)
 		wnd = (t_wnd*)(window->data);
 		root_widget = window->chd;
 		root = (t_wdt*)(root_widget->data);
-//		root->win_srf = SDL_GetWindowSurface(wnd->win);
-//		root->size.w = root->win_srf->w - 60;
-//		root->size.h = root->win_srf->h - 60;
-//		root->g_size = root->size;
 		act_node(root_widget, NULL, redraw_widget);
 	}
 }

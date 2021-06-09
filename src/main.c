@@ -14,6 +14,6 @@
 
 
 int main (void) {//int argc, char ** args) {
-    ft_putstr("HELLO\n");
+    ft_putstr("FROM MAIN HELLO\n");
     return(start_gui());
 }

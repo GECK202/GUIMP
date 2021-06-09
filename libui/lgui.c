@@ -114,6 +114,7 @@ t_gui *init() {
 
 	if(!(gui = (t_gui*)ft_memalloc(sizeof(t_gui))))
 		return (NULL);
+	
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		free(gui);
@@ -127,6 +128,7 @@ t_gui *init() {
 	gui->opt.size.w = SCREEN_WIDTH;
 	gui->opt.size.h = SCREEN_HEIGHT;
 	gui->opt.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+	
 	if (!(wnd = new_window(gui, &(gui->opt))))
 	{
 		free(gui);
@@ -134,16 +136,24 @@ t_gui *init() {
 		IMG_Quit();
 		return (NULL);
 	}
-	make_widget();
+	gui->opt.title = "window default2";
+	if (!(wnd2 = new_window(gui, &(gui->opt))))
+	{
+		free(gui);
+		SDL_Quit();
+		IMG_Quit();
+		return (NULL);
+	}
+	//make_widget();
 	return (gui);
 }
 
 int load()
 {
-//	if (set_window_image(wnd, "res/im1.png") == GUI_ERROR)
-	//	return (GUI_ERROR);
-	//if (set_window_image(wnd2, "res/im2.jpeg") == GUI_ERROR)
-	//	return (GUI_ERROR);
+	if (set_window_image(wnd, "res/im1.png") == GUI_ERROR)
+		return (GUI_ERROR);
+	if (set_window_image(wnd2, "res/im2.jpeg") == GUI_ERROR)
+		return (GUI_ERROR);
 	return (GUI_OK);
 }
 
@@ -165,10 +175,7 @@ void quit(t_gui *gui) {
 static int resizingEventWatcher(void *data, SDL_Event *event) {
 	t_gui		*mng;
 	t_window	*w;
-	//t_rect		r;
-	
-	//r.x = 0;
-	//r.y = 0;
+
 	if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_EXPOSED)
 	{
 		mng = (t_gui*)data;
@@ -178,24 +185,8 @@ static int resizingEventWatcher(void *data, SDL_Event *event) {
 		{
 			if (w->data && (event->window.windowID == ((t_wnd*)(w->data))->id))
 			{
-				//r.w = event->window.data1;
-				//r.h = event->window.data2;
 				redraw_window(w);
 			}
-			//{
-				
-				//if (wnd)
-				//{
-					//if (w)
-					//	w = w->nxt;
-					//remove_window(wnd);
-					//wnd = NULL;
-					
-				//}
-				
-			
-			//if (w)
-			//}
 			w = w->nxt;
 		}
 	}
@@ -210,7 +201,7 @@ int start_gui()
 	
 	if (!(gui = init()) || load() == GUI_ERROR)
 		return (GUI_ERROR);
-
+	
 	SDL_AddEventWatch(resizingEventWatcher, gui);
 
 	SDL_Log("PRESSED = %d",gui_msg(((t_wnd*)wnd->data), 1, "Модальное окно", "нажми кнопку"));

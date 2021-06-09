@@ -128,7 +128,7 @@ typedef struct		s_fnt
 typedef struct		s_wdt
 {
 	SDL_Surface		*srf;
-//	SDL_Surface		*img;
+	SDL_Surface		*img;
 //	SDL_Surface		*win_srf;
 	t_rect			size;
 //	t_rect			g_size;
@@ -159,7 +159,7 @@ void				remove_node(t_node *node);
 void				act_node(t_node *node, void *data, act_node_fun anf);
 
 t_window			*new_window(t_gui *mng, t_wnd_opt *opt);
-//int					set_window_image(t_window *window, char *filename);
+int					set_window_image(t_window *window, char *filename);
 void				redraw_window(t_window *window);
 void				update_window(t_window *window);
 void				remove_window(t_window *window);
@@ -168,6 +168,7 @@ t_widget			*new_widget(t_window *window, t_wdt_opt *opt, t_widget *prnt);
 t_widget			*new_root(t_window *window);
 
 t_wdt				*create_widget(t_wdt_opt *opt);
+int					set_widget_image(t_widget *widget, char *filename);
 void				destroy_widget(void *wdt);
 
 void				redraw_widget(t_node *widget, void *data);
