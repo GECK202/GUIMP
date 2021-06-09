@@ -163,6 +163,14 @@ void update_window(t_window *window)
 	SDL_UpdateWindowSurface(wnd->win);
 }
 
+void find_click(t_window *window, int x, int y)
+{
+	t_widget *wdt;
+
+	wdt = find_node(window->chd, window->chd, x, y);
+	printf("find widget name=%s local pos=[%d, %d]\n", wdt->name, x - wdt->g_size.x, y - wdt->g_size.y);
+}
+
 void	remove_window(t_window *window)
 {
 	remove_node(window);

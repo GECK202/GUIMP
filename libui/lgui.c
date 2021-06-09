@@ -148,7 +148,7 @@ t_gui *init() {
 
 	t_rect size = (t_rect){100,100,250,200};
 	wdt = make_widget(NULL, "widget1", size, 0xff00ff00);
-	size.x = -200;
+	size.x = 100;
 	size.y = 100;
 	wdt2 = make_widget(wdt, "widget2", size, 0xffffff00);
 	size.x = -50;
@@ -280,10 +280,25 @@ int start_gui()
 
 			if ( SDL_MOUSEBUTTONDOWN == windowEvent.button.type )
 			{
+				t_wnd	*w1 = NULL;
+				t_wnd	*w2 = NULL;
+				if (wnd)
+					w1 = (t_wnd*)(wnd->data);
+				if (wnd2)
+					w2 = (t_wnd*)(wnd2->data);
+
 				SDL_MouseButtonEvent m_ev;
 				m_ev = windowEvent.button;
 
 				SDL_Log("Window %d mouse button %d down in coord[%d:%d] clicks=%d", windowEvent.window.windowID, m_ev.button, m_ev.x, m_ev.y, m_ev.clicks);
+				if (wnd && windowEvent.window.windowID == w1->id)
+				{
+					find_click(wnd, m_ev.x, m_ev.y);
+				}
+				else if (wnd2 && windowEvent.window.windowID == w2->id)
+				{
+					find_click(wnd2, m_ev.x, m_ev.y);
+				}
 			}
 
 

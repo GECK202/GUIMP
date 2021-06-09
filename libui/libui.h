@@ -163,12 +163,14 @@ t_node				*add_node(t_node_opt *opt);
 //t_node				*add_node(t_node_opt *opt, t_node *pnt);
 void				remove_node(t_node *node);
 void				act_node(t_node *node, void *data, act_node_fun anf);
+t_node				*find_node(t_node *node, t_node *cand, int x, int y);
 
 t_window			*new_window(t_gui *mng, t_wnd_opt *opt);
 int					set_window_image(t_window *window, char *filename);
 void				redraw_window(t_window *window);
 void				update_window(t_window *window);
 void				remove_window(t_window *window);
+void 				find_click(t_window *window, int x, int y);
 
 t_widget			*new_widget(t_window *window, t_wdt_opt *opt, t_widget *prnt, const char *name);
 t_widget			*new_root(t_window *window);

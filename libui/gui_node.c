@@ -36,8 +36,8 @@ static void set_node_sizes(t_node *node)
 		node->g_size.h = node->size.h;
 		node->r_size.x = max_i(node->g_size.x, node->pnt->r_size.x);
 		node->r_size.y = max_i(node->g_size.y, node->pnt->r_size.y);
-		node->r_size.w = min_i((node->g_size.x + node->g_size.w), (node->pnt->r_size.x + node->pnt->r_size.w)) - node->r_size.x;
-		node->r_size.h = min_i((node->g_size.y + node->g_size.h), (node->pnt->r_size.y + node->pnt->r_size.h)) - node->r_size.y;
+		node->r_size.w = max_i(0, min_i((node->g_size.x + node->g_size.w), (node->pnt->r_size.x + node->pnt->r_size.w)) - node->r_size.x);
+		node->r_size.h = max_i(0, min_i((node->g_size.y + node->g_size.h), (node->pnt->r_size.y + node->pnt->r_size.h)) - node->r_size.y);
 		node->l_size.x = 0 - min_i(0, node->size.x);
 		node->l_size.y = 0 - min_i(0, node->size.y);
 		node->l_size.w = min_i((node->size.w - node->l_size.x), node->r_size.w);
@@ -128,4 +128,20 @@ void	act_node(t_node *node, void *data, act_node_fun anf)
 		if (node->nxt)
 			act_node(node->nxt, data, anf);
 	}
+}
+
+t_node	*find_node(t_node *node, t_node *cand, int x, int y)
+{
+	if (node)
+	{
+		if (x >= node->r_size.x && x <= node->r_size.x + node->r_size.w && y >= node->r_size.y && x <= node->r_size.y + node->r_size.h)
+		{
+			cand = node;
+			if (node->chd)
+				cand = find_node(node->chd, cand, x, y);
+			if (node->nxt)
+				cand = find_node(cand->nxt, cand, x, y);
+		}
+	}
+	return (cand);
 }
