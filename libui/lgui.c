@@ -19,6 +19,8 @@
 t_window *wnd = NULL;
 t_window *wnd2 = NULL;
 t_widget *wdt = NULL;
+t_widget *wdt2 = NULL;
+t_widget *wdt3 = NULL;
 //t_gui gui;
 
 void PrintEvent(const SDL_Event * event)
@@ -92,7 +94,7 @@ void PrintEvent(const SDL_Event * event)
 	}
 }
 
-void	make_widget()
+t_widget	*make_widget(t_widget *prnt, const char *name, t_rect size, unsigned int color)
 {
 	t_wdt_opt	opt;
 	//t_wnd		*win;
@@ -100,14 +102,10 @@ void	make_widget()
 	//win = (t_wnd*)(wnd->data);
 	opt.title = NULL;
 	//opt.win_srf = SDL_GetWindowSurface(win->win);
-	opt.color = 0xffff00ff;
-	opt.size.x = 100;
-	opt.size.y = 100;
-	opt.size.w = 100;
-	opt.size.h = 40;
-
+	opt.color = color;
+	opt.size = size;
 	//opt.g_size = opt.size;
-	wdt = new_widget(wnd, &opt, NULL, "new widget");
+	return(new_widget(wnd, &opt, prnt, name));
 }
 
 t_gui *init() {
@@ -130,6 +128,8 @@ t_gui *init() {
 	gui->opt.size.h = SCREEN_HEIGHT;
 	gui->opt.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 	
+	gui->wdws.type = GUI_MNG;
+
 	if (!(wnd = new_window(gui, &(gui->opt))))
 	{
 		free(gui);
@@ -145,7 +145,17 @@ t_gui *init() {
 		IMG_Quit();
 		return (NULL);
 	}
-	make_widget();
+
+	t_rect size = (t_rect){100,100,250,200};
+	wdt = make_widget(NULL, "widget1", size, 0xff00ff00);
+	size.x = -200;
+	size.y = 100;
+	wdt2 = make_widget(wdt, "widget2", size, 0xffffff00);
+	size.x = -50;
+	size.y = 50;
+	size.w = 125;
+	size.h = 25;
+	wdt3 = make_widget(wdt2, "widget3", size, 0xffff00ff);
 	return (gui);
 }
 

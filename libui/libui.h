@@ -46,6 +46,7 @@
 
 typedef enum		e_n_type
 {
+	GUI_MNG,
 	GUI_WND,
 	GUI_WDT
 }					t_n_type;
@@ -68,6 +69,9 @@ typedef struct		s_node
 	t_n_type		type;
 	SDL_Surface		*srf;
 	SDL_Rect		size;
+	SDL_Rect		g_size;
+	SDL_Rect		r_size;
+	SDL_Rect		l_size;
 }					t_node;
 
 typedef struct		s_node_opt

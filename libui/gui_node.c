@@ -12,6 +12,45 @@
 
 #include "libui.h"
 
+static int min_i(int v1, int v2)
+{
+	if (v1 < v2)
+		return (v1);
+	return (v2);
+}
+
+static int max_i(int v1, int v2)
+{
+	if (v1 > v2)
+		return (v1);
+	return (v2);
+}
+
+static void set_node_sizes(t_node *node)
+{
+	if (node->type == GUI_WDT)
+	{
+		node->g_size.x = node->size.x + node->pnt->g_size.x;
+		node->g_size.y = node->size.y + node->pnt->g_size.y;
+		node->g_size.w = node->size.w;
+		node->g_size.h = node->size.h;
+		node->r_size.x = max_i(node->g_size.x, node->pnt->r_size.x);
+		node->r_size.y = max_i(node->g_size.y, node->pnt->r_size.y);
+		node->r_size.w = min_i((node->g_size.x + node->g_size.w), (node->pnt->r_size.x + node->pnt->r_size.w)) - node->r_size.x;
+		node->r_size.h = min_i((node->g_size.y + node->g_size.h), (node->pnt->r_size.y + node->pnt->r_size.h)) - node->r_size.y;
+		node->l_size.x = 0 - min_i(0, node->size.x);
+		node->l_size.y = 0 - min_i(0, node->size.y);
+		node->l_size.w = min_i((node->size.w - node->l_size.x), node->r_size.w);
+		node->l_size.h = min_i((node->size.h - node->l_size.y), node->r_size.h);
+	}
+	else
+	{
+		node->g_size = node->size;
+		node->r_size = node->size;
+		node->l_size = node->size;
+	}
+}
+
 static t_node	*create_node(t_node_opt	*opt)
 {
 	t_node *node;
@@ -30,6 +69,8 @@ static t_node	*create_node(t_node_opt	*opt)
 		node->srf = opt->srf;
 		node->type = opt->type;
 		node->size = opt->size;
+		set_node_sizes(node);
+
 	}
 	return (node);
 }

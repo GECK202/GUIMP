@@ -69,18 +69,14 @@ int			set_wdt_node_opt(t_node_opt *opt, t_node *prnt, t_wnd *wnd, t_wdt *wdt)
 	opt->drw = NULL;
 	opt->type = GUI_WDT;
 	opt->srf = NULL;
-	opt->size.x = 0;
-	opt->size.y = 0;
-	opt->size.h = 0;
-	opt->size.w = 0;
 	if (wnd && wnd->win)
 	{
 		if (prnt && prnt->srf)
 			opt->srf = prnt->srf;
 		else
 			opt->srf = SDL_GetWindowSurface(wnd->win);
-		opt->size.w = opt->srf->w;
-		opt->size.h = opt->srf->h;
+		//opt->size.w = opt->srf->w;
+		//opt->size.h = opt->srf->h;
 		return (GUI_OK);
 	}
 	return (GUI_ERROR);
@@ -102,6 +98,8 @@ t_widget	*new_widget(t_window *window, t_wdt_opt *opt, t_widget *prnt, const cha
 		if ((wdt = create_widget(opt)))
 		{
 			n_opt.name = name;
+			n_opt.size = *((SDL_Rect*)(&opt->size));
+			printf("size=[%d, %d, %d, %d]\n", n_opt.size.x, n_opt.size.y, n_opt.size.w, n_opt.size.h);
 			if ((GUI_OK == set_wdt_node_opt(&n_opt, prnt, window->data, wdt)) && (widget = add_node(&n_opt)))
 			{
 				return (widget);
@@ -137,10 +135,6 @@ void redraw_widget(t_node *widget, void *data)
 	int			*n;
 
 	n = (int*)data;
-	if (widget->pnt)
-		printf("widget=%s; parent surf=%p\n", widget->name, widget->pnt->srf);
-	else
-		printf("widget=%s; no parent\n", widget->name);
 	if (widget->pnt && (widget->pnt->type != GUI_WND))
 		widget->srf = widget->pnt->srf;
 	
@@ -158,9 +152,14 @@ void redraw_widget(t_node *widget, void *data)
 	//*/
 	fon = SDL_CreateRGBSurface(0, widget->srf->w, widget->srf->h, 32, 0, 0, 0, 0);
 	//printf("color = %x\n", wdt->color);
-	printf("wdt->surf = %p\n", widget->srf);
+	//printf("wdt->surf = %p\n", widget->srf);
 	SDL_FillRect(fon, NULL, wdt->color);
-	SDL_BlitSurface(fon, NULL, widget->srf, NULL);
+	printf("%s:\n", widget->name);
+	printf("size=[%d, %d, %d, %d]\n", widget->size.x, widget->size.y, widget->size.w, widget->size.h);
+	printf("g_size=[%d, %d, %d, %d]\n", widget->g_size.x, widget->g_size.y, widget->g_size.w, widget->g_size.h);
+	printf("r_size=[%d, %d, %d, %d]\n", widget->r_size.x, widget->r_size.y, widget->r_size.w, widget->r_size.h);
+	printf("l_size=[%d, %d, %d, %d]\n", widget->l_size.x, widget->l_size.y, widget->l_size.w, widget->l_size.h);
+	SDL_BlitSurface(fon, &(widget->l_size), widget->srf, &(widget->r_size));
 	//printf("wdt img = %p\n", wdt->img);
 	if (wdt->img)
 	{

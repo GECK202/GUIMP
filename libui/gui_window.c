@@ -104,6 +104,10 @@ static t_widget	*add_root(t_window *window)
 			n_opt.name = "root";
 			if ((GUI_OK == set_wdt_node_opt(&n_opt, window, wnd, root)) && (node = add_node(&n_opt)))
 			{
+				node->size = window->size;
+				node->r_size = window->size;
+				node->g_size = window->size;
+				node->l_size = window->size;
 				return (node);
 			}
 			destroy_widget(root);
