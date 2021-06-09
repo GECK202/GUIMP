@@ -95,9 +95,9 @@ void PrintEvent(const SDL_Event * event)
 void	make_widget()
 {
 	t_wdt_opt	opt;
-	t_wnd		*win;
+	//t_wnd		*win;
 
-	win = (t_wnd*)(wnd->data);
+	//win = (t_wnd*)(wnd->data);
 	opt.title = NULL;
 	//opt.win_srf = SDL_GetWindowSurface(win->win);
 	opt.color = 0xffff00ff;
@@ -105,8 +105,9 @@ void	make_widget()
 	opt.size.y = 100;
 	opt.size.w = 100;
 	opt.size.h = 40;
+
 	//opt.g_size = opt.size;
-	wdt = new_widget(wnd, &opt, NULL);
+	wdt = new_widget(wnd, &opt, NULL, "new widget");
 }
 
 t_gui *init() {
@@ -122,7 +123,7 @@ t_gui *init() {
 		IMG_Quit();
 		return (NULL);
 	}
-	gui->opt.title = "window default";
+	gui->opt.title = "window 1";
 	gui->opt.size.x = SDL_WINDOWPOS_UNDEFINED;
 	gui->opt.size.y = SDL_WINDOWPOS_UNDEFINED;
 	gui->opt.size.w = SCREEN_WIDTH;
@@ -136,7 +137,7 @@ t_gui *init() {
 		IMG_Quit();
 		return (NULL);
 	}
-	gui->opt.title = "window default2";
+	gui->opt.title = "window 2";
 	if (!(wnd2 = new_window(gui, &(gui->opt))))
 	{
 		free(gui);
@@ -144,7 +145,7 @@ t_gui *init() {
 		IMG_Quit();
 		return (NULL);
 	}
-	//make_widget();
+	make_widget();
 	return (gui);
 }
 

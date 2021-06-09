@@ -22,6 +22,7 @@ static t_node	*create_node(t_node_opt	*opt)
 		node->nxt = NULL;
 		node->prv = NULL;
 		node->chd = NULL;
+		node->name = opt->name;
 		node->data = opt->data;
 		node->del = opt->del;
 		node->upd = opt->upd;
@@ -81,9 +82,9 @@ void	act_node(t_node *node, void *data, act_node_fun anf)
 	if (node)
 	{
 		anf(node, data);
-		if (node->nxt)
-			act_node(node->nxt, data, anf);
 		if (node->chd)
 			act_node(node->chd, data, anf);
+		if (node->nxt)
+			act_node(node->nxt, data, anf);
 	}
 }

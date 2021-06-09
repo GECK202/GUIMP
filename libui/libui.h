@@ -61,6 +61,7 @@ typedef struct		s_node
 	struct s_node	*nxt;
 	struct s_node	*prv;
 	void			*data;
+	const char		*name;
 	act_f			del;
 	act_f			upd;
 	act_f			drw;
@@ -73,6 +74,7 @@ typedef struct		s_node_opt
 {
 	t_node			*pnt;
 	void			*data;
+	const char		*name;
 	act_f			del;
 	act_f			upd;
 	act_f			drw;
@@ -164,7 +166,7 @@ void				redraw_window(t_window *window);
 void				update_window(t_window *window);
 void				remove_window(t_window *window);
 
-t_widget			*new_widget(t_window *window, t_wdt_opt *opt, t_widget *prnt);
+t_widget			*new_widget(t_window *window, t_wdt_opt *opt, t_widget *prnt, const char *name);
 t_widget			*new_root(t_window *window);
 
 t_wdt				*create_widget(t_wdt_opt *opt);

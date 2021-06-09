@@ -52,7 +52,6 @@ static t_wnd *create_window(t_wnd_opt *opt)
 
 int		set_node_opt(t_node_opt *opt, t_node *prnt, t_wnd *wnd)
 {
-	
 	opt->pnt = prnt;
 	opt->data = wnd;
 	opt->del = destroy_window;
@@ -102,6 +101,7 @@ static t_widget	*add_root(t_window *window)
 		set_root_opt(&opt, wnd->win);
 		if ((root = create_widget(&opt)))
 		{
+			n_opt.name = "root";
 			if ((GUI_OK == set_wdt_node_opt(&n_opt, window, wnd, root)) && (node = add_node(&n_opt)))
 			{
 				return (node);
@@ -128,6 +128,7 @@ t_window *new_window(t_gui *mng, t_wnd_opt *opt)
 
 	if ((wnd = create_window(opt)))
 	{
+		n_opt.name = opt->title;
 		if ((GUI_OK == set_node_opt(&n_opt, &(mng->wdws), wnd)) && (window = add_node(&n_opt)))
 		{
 			window->srf = SDL_GetWindowSurface(wnd->win);
@@ -154,7 +155,7 @@ void update_window(t_window *window)
 	t_wnd *wnd;
 
 	wnd = (t_wnd*)(window->data);
-	printf("update win %p\n", wnd->win);
+	//printf("update win %p\n", wnd->win);
 	SDL_UpdateWindowSurface(wnd->win);
 }
 
