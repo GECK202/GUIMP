@@ -148,9 +148,9 @@ t_gui *init() {
 
 	t_rect size = (t_rect){100,100,250,200};
 	wdt = make_widget(NULL, "widget1", size, 0xff00ff00);
-	size.x = 100;
-	size.y = 100;
-	wdt2 = make_widget(wdt, "widget2", size, 0xffffff00);
+	size.x = 150;
+	size.y = 150;
+	wdt2 = make_widget(NULL, "widget2", size, 0xffffff00);
 	size.x = -50;
 	size.y = 50;
 	size.w = 125;
