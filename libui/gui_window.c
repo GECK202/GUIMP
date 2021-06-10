@@ -105,9 +105,10 @@ static t_widget	*add_root(t_window *window)
 			if ((GUI_OK == set_wdt_node_opt(&n_opt, window, wnd, root)) && (node = add_node(&n_opt)))
 			{
 				node->size = window->size;
-				node->r_size = window->size;
-				node->g_size = window->size;
-				node->l_size = window->size;
+				node->r_s = window->size;
+				node->g_s = window->size;
+				node->l_s = window->size;
+				node->events = 1;
 				return (node);
 			}
 			destroy_widget(root);
@@ -165,10 +166,15 @@ void update_window(t_window *window)
 
 void find_click(t_window *window, int x, int y)
 {
-	t_widget *wdt;
+	t_widget		*wdt;
+	t_rect			pos;
+	unsigned int	event;
 
-	wdt = find_node(window->chd, window->chd, x, y);
-	printf("find widget name=%s local pos=[%d, %d]\n", wdt->name, x - wdt->g_size.x, y - wdt->g_size.y);
+	pos.x = x;
+	pos.y = y;
+	event = L_M_DOWN;
+	wdt = find_event_node(window->chd, window->chd, pos, event);
+	printf("find widget name=%s local pos=[%d, %d]\n", wdt->name, x - wdt->g_s.x, y - wdt->g_s.y);
 }
 
 void	remove_window(t_window *window)

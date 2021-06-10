@@ -43,6 +43,16 @@
 # define IDYES 6
 # define IDNO 7
 
+# define L_M_DOWN	0x00000001
+# define L_M_UP		0x00000002
+# define R_M_DOWN	0x00000004
+# define R_M_UP		0x00000008
+# define M_M_DOWN	0x00000010
+# define M_M_UP		0x00000020
+# define M_MOVE		0x00000040
+# define M_M_SCROLL	0x00000080
+
+
 
 typedef enum		e_n_type
 {
@@ -69,9 +79,10 @@ typedef struct		s_node
 	t_n_type		type;
 	SDL_Surface		*srf;
 	SDL_Rect		size;
-	SDL_Rect		g_size;
-	SDL_Rect		r_size;
-	SDL_Rect		l_size;
+	SDL_Rect		g_s;
+	SDL_Rect		r_s;
+	SDL_Rect		l_s;
+	unsigned int	events;
 }					t_node;
 
 typedef struct		s_node_opt
@@ -121,7 +132,7 @@ typedef struct		s_wdt_opt
 //	SDL_Surface		*win_srf;
 	unsigned int	color;
 	t_rect			size;
-//	t_rect			g_size;
+//	t_rect			g_s;
 }					t_wdt_opt;
 
 typedef struct		s_fnt
@@ -137,7 +148,7 @@ typedef struct		s_wdt
 	SDL_Surface		*img;
 //	SDL_Surface		*win_srf;
 	t_rect			size;
-//	t_rect			g_size;
+//	t_rect			g_s;
 	//draw_func		draw;
 	char			*title;
 	//t_fnt			*font;
@@ -163,7 +174,7 @@ t_node				*add_node(t_node_opt *opt);
 //t_node				*add_node(t_node_opt *opt, t_node *pnt);
 void				remove_node(t_node *node);
 void				act_node(t_node *node, void *data, act_node_fun anf);
-t_node				*find_node(t_node *node, t_node *cand, int x, int y);
+t_node				*find_event_node(t_node *node, t_node *cand, t_rect pos, unsigned int event);
 
 t_window			*new_window(t_gui *mng, t_wnd_opt *opt);
 int					set_window_image(t_window *window, char *filename);
@@ -178,6 +189,8 @@ t_widget			*new_root(t_window *window);
 t_wdt				*create_widget(t_wdt_opt *opt);
 int					set_widget_image(t_widget *widget, char *filename);
 void				destroy_widget(void *wdt);
+void				subscribe_widget(unsigned int event, t_widget *widget);
+void				unsubscribe_widget(unsigned int event, t_widget *widget);
 
 void				redraw_widget(t_node *widget, void *data);
 void				remove_widget(t_widget *widget);

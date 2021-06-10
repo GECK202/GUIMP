@@ -156,15 +156,25 @@ void redraw_widget(t_node *widget, void *data)
 	SDL_FillRect(fon, NULL, wdt->color);
 	printf("%s:\n", widget->name);
 	printf("size=[%d, %d, %d, %d]\n", widget->size.x, widget->size.y, widget->size.w, widget->size.h);
-	printf("g_size=[%d, %d, %d, %d]\n", widget->g_size.x, widget->g_size.y, widget->g_size.w, widget->g_size.h);
-	printf("r_size=[%d, %d, %d, %d]\n", widget->r_size.x, widget->r_size.y, widget->r_size.w, widget->r_size.h);
-	printf("l_size=[%d, %d, %d, %d]\n", widget->l_size.x, widget->l_size.y, widget->l_size.w, widget->l_size.h);
-	SDL_BlitSurface(fon, &(widget->l_size), widget->srf, &(widget->r_size));
+	printf("g_s=[%d, %d, %d, %d]\n", widget->g_s.x, widget->g_s.y, widget->g_s.w, widget->g_s.h);
+	printf("r_s=[%d, %d, %d, %d]\n", widget->r_s.x, widget->r_s.y, widget->r_s.w, widget->r_s.h);
+	printf("l_s=[%d, %d, %d, %d]\n", widget->l_s.x, widget->l_s.y, widget->l_s.w, widget->l_s.h);
+	SDL_BlitSurface(fon, &(widget->l_s), widget->srf, &(widget->r_s));
 	//printf("wdt img = %p\n", wdt->img);
 	if (wdt->img)
 	{
 		SDL_BlitSurface(wdt->img, NULL, widget->srf, NULL);
 	}
+}
+
+void	subscribe_widget(unsigned int event, t_widget *widget)
+{
+	widget->events = widget->events | event;
+}
+
+void	unsubscribe_widget(unsigned int event, t_widget *widget)
+{
+	widget->events = widget->events & (~event);
 }
 
 void	update_root(t_window *window)

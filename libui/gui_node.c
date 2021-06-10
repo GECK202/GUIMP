@@ -12,51 +12,54 @@
 
 #include "libui.h"
 
-static int min_i(int v1, int v2)
+static int	min_i(int v1, int v2)
 {
 	if (v1 < v2)
 		return (v1);
 	return (v2);
 }
 
-static int max_i(int v1, int v2)
+static int	max_i(int v1, int v2)
 {
 	if (v1 > v2)
 		return (v1);
 	return (v2);
 }
 
-static void set_node_sizes(t_node *node)
+static void	set_node_sizes(t_node *node)
 {
 	if (node->type == GUI_WDT)
 	{
-		node->g_size.x = node->size.x + node->pnt->g_size.x;
-		node->g_size.y = node->size.y + node->pnt->g_size.y;
-		node->g_size.w = node->size.w;
-		node->g_size.h = node->size.h;
-		node->r_size.x = max_i(node->g_size.x, node->pnt->r_size.x);
-		node->r_size.y = max_i(node->g_size.y, node->pnt->r_size.y);
-		node->r_size.w = max_i(0, min_i((node->g_size.x + node->g_size.w), (node->pnt->r_size.x + node->pnt->r_size.w)) - node->r_size.x);
-		node->r_size.h = max_i(0, min_i((node->g_size.y + node->g_size.h), (node->pnt->r_size.y + node->pnt->r_size.h)) - node->r_size.y);
-		node->l_size.x = 0 - min_i(0, node->size.x);
-		node->l_size.y = 0 - min_i(0, node->size.y);
-		node->l_size.w = min_i((node->size.w - node->l_size.x), node->r_size.w);
-		node->l_size.h = min_i((node->size.h - node->l_size.y), node->r_size.h);
+		node->g_s.x = node->size.x + node->pnt->g_s.x;
+		node->g_s.y = node->size.y + node->pnt->g_s.y;
+		node->g_s.w = node->size.w;
+		node->g_s.h = node->size.h;
+		node->r_s.x = max_i(node->g_s.x, node->pnt->r_s.x);
+		node->r_s.y = max_i(node->g_s.y, node->pnt->r_s.y);
+		node->r_s.w = max_i(0, min_i((node->g_s.x + node->g_s.w),
+					(node->pnt->r_s.x + node->pnt->r_s.w)) - node->r_s.x);
+		node->r_s.h = max_i(0, min_i((node->g_s.y + node->g_s.h),
+					(node->pnt->r_s.y + node->pnt->r_s.h)) - node->r_s.y);
+		node->l_s.x = 0 - min_i(0, node->size.x);
+		node->l_s.y = 0 - min_i(0, node->size.y);
+		node->l_s.w = min_i((node->size.w - node->l_s.x), node->r_s.w);
+		node->l_s.h = min_i((node->size.h - node->l_s.y), node->r_s.h);
 	}
 	else
 	{
-		node->g_size = node->size;
-		node->r_size = node->size;
-		node->l_size = node->size;
+		node->g_s = node->size;
+		node->r_s = node->size;
+		node->l_s = node->size;
 	}
 }
 
 static t_node	*create_node(t_node_opt	*opt)
 {
-	t_node *node;
+	t_node	*node;
 
-	node = (t_node*)ft_memalloc(sizeof(t_node));
-	if (node) {
+	node = (t_node *)ft_memalloc(sizeof(t_node));
+	if (node)
+	{
 		node->pnt = opt->pnt;
 		node->nxt = NULL;
 		node->prv = NULL;
@@ -70,15 +73,14 @@ static t_node	*create_node(t_node_opt	*opt)
 		node->type = opt->type;
 		node->size = opt->size;
 		set_node_sizes(node);
-
 	}
 	return (node);
 }
 
 t_node	*add_node(t_node_opt *opt)
 {
-	t_node *node;
-	t_node *prv;
+	t_node	*node;
+	t_node	*prv;
 
 	node = create_node(opt);
 	if (node)
@@ -91,7 +93,7 @@ t_node	*add_node(t_node_opt *opt)
 		{
 			prv = opt->pnt->chd;
 			if (prv->nxt)
-				while(prv->nxt)
+				while (prv->nxt)
 					prv = prv->nxt;
 			node->prv = prv;
 			prv->nxt = node;
@@ -114,7 +116,7 @@ void	remove_node(t_node *node)
 			node->chd = node->nxt;
 		if (node->data)
 			node->del(node->data);
-		free(node);	
+		free(node);
 	}
 }
 
@@ -130,17 +132,22 @@ void	act_node(t_node *node, void *data, act_node_fun anf)
 	}
 }
 
-t_node	*find_node(t_node *node, t_node *cand, int x, int y)
+t_node	*find_event_node(t_node *node, t_node *cand, t_rect pos,
+			unsigned int event)
 {
 	if (node)
 	{
-		if (x >= node->r_size.x && x <= node->r_size.x + node->r_size.w && y >= node->r_size.y && x <= node->r_size.y + node->r_size.h)
+		if (pos.x >= node->r_s.x
+			&& pos.x <= node->r_s.x + node->r_s.w
+			&& pos.y >= node->r_s.y
+			&& pos.y <= node->r_s.y + node->r_s.h)
 		{
-			cand = node;
+			if (node->events & event)
+				cand = node;
 			if (node->chd)
-				cand = find_node(node->chd, cand, x, y);
+				cand = find_event_node(node->chd, cand, pos, event);
 			if (node->nxt)
-				cand = find_node(cand->nxt, cand, x, y);
+				cand = find_event_node(cand->nxt, cand, pos, event);
 		}
 	}
 	return (cand);
