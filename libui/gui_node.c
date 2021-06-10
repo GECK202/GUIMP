@@ -26,7 +26,7 @@ static int	max_i(int v1, int v2)
 	return (v2);
 }
 
-static void	set_node_sizes(t_node *node)
+void	set_node_sizes(t_node *node)
 {
 	if (node->type == GUI_WDT)
 	{

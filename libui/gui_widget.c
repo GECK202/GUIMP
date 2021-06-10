@@ -139,6 +139,8 @@ void redraw_widget(t_node *widget, void *data)
 		widget->srf = widget->pnt->srf;
 	
 	wdt = (t_wdt*)((t_widget*)(widget)->data);
+	if (widget->pnt->type == GUI_WDT)
+		set_node_sizes(widget);
 	/*
 	if (wdt->srf->w < wdt->size.w || wdt->srf->h < wdt->size.h)
 	{
@@ -167,14 +169,32 @@ void redraw_widget(t_node *widget, void *data)
 	}
 }
 
-void	subscribe_widget(unsigned int event, t_widget *widget)
+void	subscribe_widget(unsigned int event, t_widget *widget, evn_node_fun evn_f)
 {
+	int	index;
+
 	widget->events = widget->events | event;
+	index = 0;
+	while (event)
+	{
+		event = event >> 1;
+		++index;
+	}
+	widget->evn_f[index] = evn_f;
 }
 
 void	unsubscribe_widget(unsigned int event, t_widget *widget)
 {
+	int	index;
+
 	widget->events = widget->events & (~event);
+	index = 0;
+	while (event)
+	{
+		event = event >> 1;
+		++index;
+	}
+	widget->evn_f[index] = NULL;
 }
 
 void	update_root(t_window *window)
@@ -190,6 +210,11 @@ void	update_root(t_window *window)
 		if (root_widget && root_widget->srf)
 			SDL_FreeSurface(root_widget->srf);
 		root_widget->srf = SDL_GetWindowSurface(wnd->win);
+		root_widget->size.w = root_widget->srf->w;
+		root_widget->size.h = root_widget->srf->h;
+		root_widget->g_s = root_widget->size;
+		root_widget->r_s = root_widget->size;
+		root_widget->l_s = root_widget->size;
 		root = (t_wdt*)(root_widget->data);
 		act_node(root_widget, NULL, redraw_widget);
 	}

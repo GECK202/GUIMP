@@ -108,6 +108,16 @@ t_widget	*make_widget(t_widget *prnt, const char *name, t_rect size, unsigned in
 	return(new_widget(wnd, &opt, prnt, name));
 }
 
+void	widget_click(void *widget, void *data)
+{
+	t_rect		*rect;
+	t_widget	*wdt;
+
+	rect = (t_rect *)(data);
+	wdt = (t_widget *)(widget);
+	printf("widget %s click in [%d, %d]\n", wdt->name, rect->x, rect->y);
+}
+
 t_gui *init() {
 	t_gui *gui;
 
@@ -153,12 +163,14 @@ t_gui *init() {
 	size.w = 210;
 	size.h = 160;
 	wdt2 = make_widget(wdt, "widget2", size, 0xffffff00);
-	size.x = 40;
+	size.x = -50;
 	size.y = 60;
 	size.w = 125;
 	size.h = 25;
 	wdt3 = make_widget(wdt2, "widget3", size, 0xffff00ff);
-	subscribe_widget(L_M_DOWN, wdt3);
+	subscribe_widget(L_M_DOWN, wdt, widget_click);
+	subscribe_widget(L_M_DOWN, wdt2, widget_click);
+	subscribe_widget(L_M_DOWN, wdt3, widget_click);
 	return (gui);
 }
 

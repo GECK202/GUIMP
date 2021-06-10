@@ -87,6 +87,16 @@ static void		set_root_opt(t_wdt_opt *opt, SDL_Window *win)
 	opt->size.h = screen->h;
 }
 
+void	root_click(void *data1, void *data2)
+{
+	int *n;
+	t_rect *pos;
+
+	n = (int*)(data1);
+	pos = (t_rect*)(data2);
+	printf("root click in [%d, %d]\n", pos->x, pos->y);
+}
+
 static t_widget	*add_root(t_window *window)
 {
 	t_wnd		*wnd;
@@ -109,6 +119,7 @@ static t_widget	*add_root(t_window *window)
 				node->g_s = window->size;
 				node->l_s = window->size;
 				node->events = 1;
+				node->evn_f[1] = root_click;
 				return (node);
 			}
 			destroy_widget(root);
@@ -169,12 +180,26 @@ void find_click(t_window *window, int x, int y)
 	t_widget		*wdt;
 	t_rect			pos;
 	unsigned int	event;
+	int				index;
 
 	pos.x = x;
 	pos.y = y;
 	event = L_M_DOWN;
 	wdt = find_event_node(window->chd, window->chd, pos, event);
-	printf("find widget name=%s local pos=[%d, %d]\n", wdt->name, x - wdt->g_s.x, y - wdt->g_s.y);
+	if (wdt)
+	{
+		index = 0;
+		while (event)
+		{
+			event = event >> 1;
+			++index;
+		}
+		pos.x -= wdt->g_s.x;
+		pos.y -= wdt->g_s.y;
+		if (wdt->evn_f[index])
+			wdt->evn_f[index](wdt, &pos);
+	}
+	//printf("find widget name=%s local pos=[%d, %d]\n", wdt->name, x - wdt->g_s.x, y - wdt->g_s.y);
 }
 
 void	remove_window(t_window *window)

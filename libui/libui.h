@@ -65,6 +65,8 @@ typedef void (*act_f)(void*);
 
 //typedef void (*draw_func)(void*);
 
+typedef void (*evn_node_fun)(void*, void*);
+
 typedef struct		s_node
 {
 	struct s_node	*pnt;
@@ -83,7 +85,10 @@ typedef struct		s_node
 	SDL_Rect		r_s;
 	SDL_Rect		l_s;
 	unsigned int	events;
+	evn_node_fun	evn_f[32];
 }					t_node;
+
+typedef void (*act_node_fun)(t_node*, void*);
 
 typedef struct		s_node_opt
 {
@@ -98,7 +103,7 @@ typedef struct		s_node_opt
 	SDL_Rect		size;
 }					t_node_opt;
 
-typedef void (*act_node_fun)(t_node*, void*);
+
 typedef t_node		t_window;
 typedef t_node		t_widget;
 
@@ -173,6 +178,7 @@ int					start_gui();
 t_node				*add_node(t_node_opt *opt);
 //t_node				*add_node(t_node_opt *opt, t_node *pnt);
 void				remove_node(t_node *node);
+void				set_node_sizes(t_node *node);
 void				act_node(t_node *node, void *data, act_node_fun anf);
 t_node				*find_event_node(t_node *node, t_node *cand, t_rect pos, unsigned int event);
 
@@ -189,7 +195,7 @@ t_widget			*new_root(t_window *window);
 t_wdt				*create_widget(t_wdt_opt *opt);
 int					set_widget_image(t_widget *widget, char *filename);
 void				destroy_widget(void *wdt);
-void				subscribe_widget(unsigned int event, t_widget *widget);
+void				subscribe_widget(unsigned int event, t_widget *widget, evn_node_fun evn_f);
 void				unsubscribe_widget(unsigned int event, t_widget *widget);
 
 void				redraw_widget(t_node *widget, void *data);
